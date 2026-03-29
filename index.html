@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JAMS INVESTMENT | Home</title>
+    
+    <!-- Dependencies -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+        
+        :root {
+            --brand-red: #820000;
+            --brand-dark: #191c1e;
+            --brand-light: #f7f9fc;
+        }
+
+        body { 
+            margin: 0; 
+            padding: 0; 
+            background-color: var(--brand-light); 
+            overflow-x: hidden; 
+            color: var(--brand-dark);
+            scroll-behavior: smooth;
+        }
+        
+        .font-inter { font-family: 'Inter', sans-serif; }
+        .font-libre { font-family: 'Libre Caslon Text', serif; }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        @keyframes marqueeSeamless {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+            display: flex;
+            width: max-content;
+            animation: marqueeSeamless 40s linear infinite;
+        }
+
+        .reveal-up {
+            animation: revealUp 1s ease-out forwards;
+        }
+        @keyframes revealUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .snap-container {
+            scroll-snap-type: y proximity;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .snap-section {
+            scroll-snap-align: start;
+            min-height: 100vh;
+        }
+
+        .stat-card {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+        }
+
+        .logo-item {
+            filter: grayscale(100%);
+            opacity: 0.4;
+            transition: all 0.4s ease;
+        }
+        .logo-item:hover {
+            filter: grayscale(0%);
+            opacity: 1;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // --- 3D Globe Component ---
+        const InteractiveGlobe = ({ size = 60, color = 0x820000, autoRotate = true }) => {
+            const mountRef = useRef(null);
+            const globeRef = useRef(null);
+            const isDragging = useRef(false);
+            const previousMousePosition = useRef({ x: 0, y: 0 });
+            const rotationVelocity = useRef({ x: 0, y: 0 });
+
+            useEffect(() => {
+                const mount = mountRef.current;
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(45, mount.clientWidth / mount.clientHeight, 1, 1000);
+                camera.position.z = 180;
+                const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                renderer.setSize(mount.clientWidth, mount.clientHeight);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                mount.appendChild(renderer.domElement);
+
+                const globeGroup = new THREE.Group();
+                globeRef.current = globeGroup;
+                scene.add(globeGroup);
+
+                const mapUrl = "https://raw.githubusercontent.com/turban/three.js-globe/master/img/world-alpha.png";
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.src = mapUrl;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = 1024; canvas.height = 512;
+                    ctx.drawImage(img, 0, 0, 1024, 512);
+                    const data = ctx.getImageData(0, 0, 1024, 512).data;
+                    const positions = [];
+                    for (let i = 0; i < 25000; i++) {
+                        const phi = Math.acos(-1 + (2 * i) / 25000);
+                        const theta = Math.sqrt(25000 * Math.PI) * phi;
+                        const lat = 90 - (phi * 180) / Math.PI;
+                        const lon = ((theta * 180) / Math.PI) % 360 - 180;
+                        const x_px = Math.floor(((lon + 180) / 360) * 1024);
+                        const y_px = Math.floor(((90 - lat) / 180) * 512);
+                        if (data[(y_px * 1024 + x_px) * 4] > 20) {
+                            const phi_rad = (90 - lat) * (Math.PI / 180);
+                            const theta_rad = (lon + 180) * (Math.PI / 180);
+                            positions.push(
+                                -size * Math.sin(phi_rad) * Math.cos(theta_rad),
+                                size * Math.cos(phi_rad),
+                                size * Math.sin(phi_rad) * Math.sin(theta_rad)
+                            );
+                        }
+                    }
+                    const geometry = new THREE.BufferGeometry();
+                    geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+                    globeGroup.add(new THREE.Points(geometry, new THREE.PointsMaterial({ color, size: 0.7, transparent: true, opacity: 0.5 })));
+                };
+
+                const animate = () => {
+                    requestAnimationFrame(animate);
+                    if (!isDragging.current && globeRef.current) {
+                        if (autoRotate) globeRef.current.rotation.y += 0.0025;
+                        globeRef.current.rotation.y += rotationVelocity.current.x;
+                        globeRef.current.rotation.x += rotationVelocity.current.y;
+                        rotationVelocity.current.x *= 0.92;
+                        rotationVelocity.current.y *= 0.92;
+                    }
+                    renderer.render(scene, camera);
+                };
+                animate();
+
+                return () => { if (mount && renderer.domElement) mount.removeChild(renderer.domElement); };
+            }, [size, color]);
+
+            return <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing" />;
+        };
+
+        const App = () => {
+            const [scrolled, setScrolled] = useState(false);
+            const [scrollY, setScrollY] = useState(0);
+            const [windowHeight, setWindowHeight] = useState(800);
+            const containerRef = useRef(null);
+
+            useEffect(() => {
+                setWindowHeight(window.innerHeight);
+                const handleResize = () => setWindowHeight(window.innerHeight);
+                window.addEventListener('resize', handleResize);
+                const container = containerRef.current;
+                const handleScroll = () => {
+                    setScrolled(container.scrollTop > window.innerHeight * 1.5);
+                    setScrollY(container.scrollTop);
+                };
+                handleScroll();
+                container.addEventListener('scroll', handleScroll, { passive: true });
+                return () => {
+                    window.removeEventListener('resize', handleResize);
+                    container.removeEventListener('scroll', handleScroll);
+                };
+            }, []);
+
+            // Scroll Animation Logic
+            const heroProgress = Math.max(0, Math.min(1, scrollY / windowHeight));
+            const logoScale = 1 - (heroProgress * 0.85); // Shrinks to 15%
+            const logoY = -(heroProgress * 12); // Moves up slightly
+
+            const pillars = [
+                { title: "ELITE MENTORSHIP", desc: "Direct one-on-one pipelines with practitioners from Bulge Bracket IB and Tier-1 PE firms.", icon: "◈" },
+                { title: "TECHNICAL EDGE", desc: "Rigorous training focusing on LBO modeling, advanced valuation, and institutional research methodology.", icon: "◈" },
+                { title: "GLOBAL PIPELINE", desc: "Bridging the gap between Asian talent and global financial hubs through structured referrals.", icon: "◈" }
+            ];
+
+            const stats = [
+                { value: "85+", label: "ALUMNI", sub: "PLATFORM DIRECTORY" },
+                { value: "32", label: "SCHOOLS", sub: "GLOBAL INSTITUTIONS" },
+                { value: "29", label: "MAJORS", sub: "TECHNICAL FIELDS" },
+                { value: "53+", label: "FIRMS", sub: "PLACEMENT NETWORK" }
+            ];
+
+            const schools = ["Wharton", "LBS", "NTU", "HKU", "NUS", "Columbia", "INSEAD", "NYU Stern", "LSE"];
+            const firms = ["Goldman Sachs", "Morgan Stanley", "J.P. Morgan", "BlackRock", "KKR", "Point72", "Bridgewater", "Citadel"];
+
+            return (
+                <div ref={containerRef} className="snap-container no-scrollbar relative">
+                    
+                    {/* Navigation */}
+                    <nav className={`fixed top-0 left-0 z-50 w-full flex items-center justify-between px-6 md:px-12 transition-all duration-700 ${scrolled ? 'bg-white/95 backdrop-blur-md text-[#191c1e] py-5 shadow-sm' : 'bg-transparent text-white py-8'}`}>
+                        <div className="flex flex-col">
+                            <a href="index.html" className="group">
+                                <span className={`font-libre font-bold text-xl uppercase tracking-tighter ${scrolled ? '' : 'drop-shadow-md'}`}>JAMS INVESTMENT</span>
+                            </a>
+                        </div>
+                        <div className={`hidden md:flex gap-10 font-inter text-[10px] font-bold tracking-[0.2em] uppercase ${scrolled ? '' : 'drop-shadow-md'}`}>
+                            <a href="#about" className="hover:text-[#ff3b3b] transition-colors">ABOUT</a>
+                            <a href="#teams" className="hover:text-[#ff3b3b] transition-colors">TEAMS</a>
+                            {/* 導向剛才建立的 DIP 頁面 */}
+                            <a href="dip.html" className="hover:text-[#ff3b3b] transition-colors">DIP</a>
+                        </div>
+                    </nav>
+
+                    {/* Shared Visual Container for S1 & S2 */}
+                    <div className="relative w-full z-10">
+                        <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
+                            <div className="sticky top-0 h-screen w-full">
+                                <div className="absolute inset-0 bg-cover bg-center opacity-80" 
+                                     style={{ backgroundImage: "url('https://drive.google.com/thumbnail?id=1bF-GwJQpgupCHzX2cNal9KAYgDdvsea1&sz=w3000')" }} />
+                                <div className="absolute inset-0 bg-black/60 z-10" />
+                            </div>
+                        </div>
+
+                        {/* Animated Logo */}
+                        <div className="absolute inset-0 w-full h-full pointer-events-none z-20">
+                            <div className="sticky top-0 h-screen w-full flex items-center justify-center">
+                                <img 
+                                    src="https://drive.google.com/thumbnail?id=1_AfeQO-hhZyAh-KkzHYYLpkA7FmGbA9z&sz=w2000" 
+                                    alt="JAMS INVESTMENT" 
+                                    style={{ transform: `translateY(${logoY}vh) scale(${logoScale})` }}
+                                    className="w-[70%] md:w-[45%] lg:w-[30%] max-w-[500px] object-contain drop-shadow-[0_0_40px_rgba(255,255,255,0.15)]"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="relative z-30">
+                            {/* Section 1: Hero */}
+                            <section className="snap-section w-full h-screen bg-transparent"></section>
+
+                            {/* Section 2: Vision */}
+                            <section id="about" className="snap-section relative w-full h-screen flex flex-col items-center justify-center px-6 bg-transparent">
+                                <div className="font-inter text-sm md:text-base leading-relaxed font-light max-w-2xl text-center text-white/90 drop-shadow-md -translate-y-2 md:-translate-y-4">
+                                    JAMS Investment is a small-but-elite, mentorship-driven finance talent platform. Through high-touch mentorship supported by solid technical training, we build stronger, more direct industry connections and a long-term pipeline. Every member can grow with greater focus, depth, and efficiency within limited resources.
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+
+                    {/* Section 3: Pillars */}
+                    <section id="pillars" className="snap-section bg-white flex flex-col justify-center items-center py-24 px-8 md:px-12 relative z-20">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-7xl w-full">
+                            {pillars.map((p, i) => (
+                                <div key={i} className="flex flex-col items-start p-10 border border-[#191c1e]/5 bg-[#fbfcfd] hover:bg-white hover:shadow-2xl transition-all duration-500 group">
+                                    <span className="text-3xl text-[#820000] mb-6 group-hover:scale-125 transition-transform">{p.icon}</span>
+                                    <h4 className="font-inter font-black text-xl mb-4 tracking-tight uppercase">{p.title}</h4>
+                                    <p className="font-inter text-sm text-[#191c1e]/60 leading-relaxed">{p.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* Section 4: Network */}
+                    <section id="network" className="snap-section bg-[#111] text-white flex flex-col overflow-hidden px-6 md:px-12 py-24 relative z-20">
+                        <div className="flex flex-col lg:flex-row items-center gap-16 mb-20 w-full max-w-7xl mx-auto">
+                            <div className="lg:w-1/2 space-y-10">
+                                <h3 className="font-libre font-bold text-5xl md:text-7xl uppercase tracking-tighter">GLOBAL <br/>NETWORK</h3>
+                                <div className="grid grid-cols-2 gap-4">
+                                    {stats.map((s, i) => (
+                                        <div key={i} className="bg-white/5 p-8 border border-white/10 stat-card">
+                                            <div className="text-4xl md:text-6xl font-inter font-black text-[#820000]">{s.value}</div>
+                                            <div className="text-[10px] font-inter font-bold tracking-widest mt-2 uppercase">{s.label}</div>
+                                            <div className="text-[8px] font-inter opacity-40 uppercase tracking-tighter">{s.sub}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="lg:w-1/2 h-[400px] md:h-[600px] flex items-center justify-center">
+                                <InteractiveGlobe size={85} color={0xffffff} autoRotate={false} />
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Section 5: Partners */}
+                    <section className="snap-section bg-white py-24 px-6 md:px-12 flex flex-col justify-center overflow-hidden relative z-20">
+                        <div className="text-center mb-16 relative">
+                            <h3 className="font-inter text-[#191c1e] text-4xl md:text-6xl font-black tracking-tighter uppercase mb-4 relative z-10">THE FOOTPRINT</h3>
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-libre italic text-[120px] text-[#820000] opacity-[0.04] pointer-events-none whitespace-nowrap">ACADEMIC & FIRMS</div>
+                        </div>
+                        <div className="space-y-4">
+                            <div className="bg-[#f7f9fc] py-12 border-y border-[#191c1e]/5">
+                                <div className="animate-marquee whitespace-nowrap">
+                                    {[...schools, ...schools].map((name, i) => (
+                                        <span key={i} className="mx-16 font-libre font-bold text-2xl text-[#191c1e] tracking-tighter italic logo-item">{name}</span>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="bg-[#f7f9fc] py-12 border-y border-[#191c1e]/5">
+                                <div className="animate-marquee whitespace-nowrap" style={{animationDirection: 'reverse'}}>
+                                    {[...firms, ...firms].map((name, i) => (
+                                        <span key={i} className="mx-16 font-inter font-black text-2xl text-[#191c1e] tracking-tight uppercase logo-item">{name}</span>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Footer */}
+                    <footer id="contact" className="snap-section bg-[#0a0a0a] text-white px-8 md:px-12 py-20 flex flex-col relative z-20">
+                        <div className="flex flex-col md:flex-row justify-between items-start gap-12 mb-20">
+                            <div className="max-w-md">
+                                <div className="font-libre font-bold text-3xl uppercase tracking-tighter mb-4">JAMS INVESTMENT</div>
+                                <p className="font-inter text-sm text-white/40 leading-relaxed font-light text-left">
+                                    A professional directory and elite community dedicated to bridging Taiwanese talent with global buy-side and sell-side opportunities.
+                                </p>
+                            </div>
+                            <div className="flex flex-col items-start md:items-end gap-6 text-right">
+                                <span className="font-inter text-[10px] tracking-[0.4em] font-black text-[#820000] uppercase">Direct Inquiry</span>
+                                <a href="mailto:jams.investment.tw@gmail.com" className="font-inter text-xl md:text-2xl font-light hover:text-[#820000] transition-colors border-b border-white/10 pb-2">jams.investment.tw@gmail.com</a>
+                            </div>
+                        </div>
+                        <div className="flex flex-col md:flex-row justify-between items-center pt-10 border-t border-white/5 font-inter text-[9px] tracking-[0.2em] font-bold opacity-30 uppercase gap-4 text-center">
+                            <span>© 2026 JAMS INVESTMENT. All Rights Reserved.</span>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
