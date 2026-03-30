@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JAMS INVESTMENT | Teams</title>
+    
+    <!-- Dependencies -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+        
+        :root {
+            --brand-red: #820000;
+            --brand-dark: #191c1e;
+            --brand-light: #f7f9fc;
+        }
+
+        body { 
+            margin: 0; 
+            padding: 0; 
+            background-color: #0a0a0a; 
+            overflow-x: hidden; 
+            color: white;
+            scroll-behavior: smooth;
+        }
+        
+        .font-inter { font-family: 'Inter', sans-serif; }
+        .font-libre { font-family: 'Libre Caslon Text', serif; }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .reveal-up {
+            animation: revealUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes revealUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const App = () => {
+            const [scrolled, setScrolled] = useState(false);
+
+            useEffect(() => {
+                const handleScroll = () => {
+                    setScrolled(window.scrollY > 50);
+                };
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
+            return (
+                <div className="relative w-full min-h-screen">
+                    
+                    {/* Navigation */}
+                    <nav className={`fixed top-0 left-0 z-50 w-full flex items-center justify-between px-6 md:px-12 transition-all duration-700 ${scrolled ? 'bg-white/95 backdrop-blur-md text-[#191c1e] py-5 shadow-sm' : 'bg-transparent text-white py-8'}`}>
+                        <div className="flex flex-col">
+                            {/* Logo 導向首頁 */}
+                            <a href="index.html" className="group">
+                                <span className={`font-libre font-bold text-xl uppercase tracking-tighter block ${scrolled ? '' : 'drop-shadow-md'}`}>
+                                    JAMS INVESTMENT
+                                </span>
+                            </a>
+                        </div>
+                        <div className={`hidden md:flex gap-10 font-inter text-[10px] font-bold tracking-[0.2em] uppercase ${scrolled ? '' : 'drop-shadow-md'}`}>
+                            {/* 導向首頁的 about 區塊 */}
+                            <a href="index.html#about" className="hover:text-[#ff3b3b] transition-colors">ABOUT</a>
+                            {/* 停留在當前 TEAMS 頁面 */}
+                            <a href="#" className="text-[#ff3b3b] transition-colors pointer-events-none">TEAMS</a>
+                            {/* 導向 DIP 頁面 */}
+                            <a href="dip.html" className="hover:text-[#ff3b3b] transition-colors">DIP</a>
+                        </div>
+                    </nav>
+
+                    {/* Section 1: Hero (Blank Canvas for Teams) */}
+                    <section className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden">
+                        {/* 沿用首頁的星空/太空背景，維持整體品牌感 */}
+                        <div className="absolute inset-0 bg-cover bg-center opacity-40 bg-fixed" 
+                             style={{ backgroundImage: "url('https://drive.google.com/thumbnail?id=1bF-GwJQpgupCHzX2cNal9KAYgDdvsea1&sz=w3000')" }} />
+                        <div className="absolute inset-0 bg-black/60 z-10" />
+                        
+                        <div className="relative z-20 flex flex-col items-center text-center px-6 reveal-up">
+                            <span className="font-inter text-xs tracking-[0.5em] text-[#ff3b3b] uppercase mb-4 font-bold">The People</span>
+                            <h1 className="font-libre font-bold text-5xl md:text-7xl lg:text-[5rem] tracking-tighter uppercase leading-[1.1] text-white drop-shadow-lg">
+                                MEET THE <br/> JAMS TEAM
+                            </h1>
+                            <div className="w-12 h-1 bg-[#ff3b3b]/50 my-8"></div>
+                            <p className="font-inter text-sm md:text-base font-light text-white/50 tracking-widest uppercase">
+                                Structure coming soon...
+                            </p>
+                        </div>
+                    </section>
+
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
