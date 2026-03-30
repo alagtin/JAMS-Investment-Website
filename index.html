@@ -401,25 +401,23 @@
             const handleNavigate = (page) => {
                 setCurrentPage(page);
                 try {
-                    // 組合出 ?page=dip 這種網址
                     const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + (page === 'home' ? '' : `?page=${page}`);
                     window.history.pushState({ path: newUrl }, '', newUrl);
                 } catch (e) {
-                    // 防止 Canvas 預覽環境的安全限制報錯，但畫面依然能順利切換
                     console.log("Canvas iframe routing restricted, state updated locally.");
                 }
             };
 
+            // 修改：點擊 ABOUT 導向首頁最頂端 (Hero Section)
             const handleAboutClick = () => {
                 if (currentPage !== 'home') {
                     handleNavigate('home');
-                    setTimeout(() => {
-                        const sec = document.getElementById('about');
-                        if(sec) sec.scrollIntoView({ behavior: 'smooth' });
-                    }, 100);
+                    // 導向 home 後，下方的 useEffect 會自動將 scrollTop 設為 0
                 } else {
-                    const sec = document.getElementById('about');
-                    if(sec) sec.scrollIntoView({ behavior: 'smooth' });
+                    // 如果已經在首頁，則平滑滾動到最頂端
+                    if (containerRef.current) {
+                        containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
                 }
             };
 
