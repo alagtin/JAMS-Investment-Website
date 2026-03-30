@@ -39,8 +39,8 @@
 
         .reveal-up {
             opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(40px);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .reveal-up.active {
             opacity: 1;
@@ -102,45 +102,32 @@
         .project-bar-ip { background: white; color: var(--dip-blue); }
         .project-bar-gp { background: var(--brand-red); color: white; }
 
-        .topics-sidebar {
-            writing-mode: vertical-lr;
-            transform: rotate(180deg);
-            background: var(--dip-blue);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
-            letter-spacing: 0.5em;
-            text-transform: uppercase;
-            font-size: 14px;
+        /* 展示牆格位：固定比例但內部圖片自適應 */
+        .school-wall-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            width: 100%;
+            max-width: 1200px;
         }
-
-        /* 學校展示牆優化樣式 */
+        @media (min-width: 768px) {
+            .school-wall-grid {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 4rem;
+            }
+        }
         .school-wall-item {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0.5rem; /* 縮小 Padding 讓空間變大 */
-            transition: all 0.4s ease;
-            height: 140px; /* 固定一個較大的格位高度 */
+            height: 140px;
+            transition: transform 0.4s ease;
         }
         .school-wall-img {
-            max-height: 110px; /* 大幅增加基礎最大高度 */
+            max-width: 100%;
             width: auto;
-            max-width: 90%;
             object-fit: contain;
-            transition: transform 0.3s ease;
-        }
-        /* 針對視覺面積較小的 LOGO 進行補償放大 */
-        .school-wall-img.special-scale {
-            transform: scale(1.55);
-        }
-        .school-wall-item:hover .school-wall-img {
-            transform: scale(1.1);
-        }
-        .school-wall-item:hover .school-wall-img.special-scale {
-            transform: scale(1.65);
+            transition: transform 0.4s ease;
         }
     </style>
 </head>
@@ -159,23 +146,22 @@
             { value: "165", label: "APPLICATIONS RECEIVED" }
         ];
 
-        // 學校清單：標註需要縮放補償的學校
+        // 學校清單：精確對位你提供的 10 個連結順序，並賦予視覺面積補償 (weight)
+        // 圓形或方形 LOGO 視覺上會縮小，因此需要較高的 max-height
+        // 長形 LOGO 視覺上較大，因此需要較低的中高度限制
         const allSchools = [
-            { name: "NTU Singapore", id: "1j9Cph2RqeHURiBENRFUAe53EUVakrPAg", special: false },
-            { name: "King's College London", id: "1AiX6DX6pxNdID0CpzS6ldcJHuWFHIpD6", special: false },
-            { name: "Università Bocconi", id: "1TeMXKYjKjiLHeZJkzhKj_a8WNby9uZb2", special: true }, 
-            { name: "NUS", id: "1QSDDs6SyBofuhHRwAG90iHkswgY-Q2jJ", special: false },
-            { name: "HEC Paris", id: "1PRE65z3Iot1vx_7TRs3gfmBnel_ki2uP", special: false },
-            { name: "NTU Taiwan", id: "1KHdo0CETi275C4poc_UziKEYerQ6EWQc", special: true },
-            { name: "Tsinghua University", id: "1EYjQq-saHmzekttsgb9tC_0IZHOt6NpY", special: true },
-            { name: "ESSEC", id: "16YI6BRFrV1UmCcY6n02Q474OfI1Xqr7n", special: true },
-            { name: "Kelley", id: "1mdQlMRSqNKF0qQO9_9BOdrk9PRD1qfqq", special: false },
-            { name: "HKU", id: "1XsL9Hn_ihVU3SpIpwLDRkHn503usia5h", special: true } 
+            { name: "NTU Singapore", id: "1j9Cph2RqeHURiBENRFUAe53EUVakrPAg", h: "60px" },
+            { name: "KCL", id: "1AiX6DX6pxNdID0CpzS6ldcJHuWFHIpD6", h: "65px" },
+            { name: "Kelley", id: "1yrBkP5JdIruq3FcCe_fY3ifJ8wgBmIWQ", h: "55px" },
+            { name: "NTU Taiwan", id: "1taYfqGVmoHNrKj4CcrCC2l6o_5Ja6y54", h: "55px" },
+            { name: "Tsinghua", id: "1LLKAIAt2T7iDojbcCFtTEScDgWqmmNUP", h: "100px" }, // 圓形，放寬高度
+            { name: "NUS", id: "1QSDDs6SyBofuhHRwAG90iHkswgY-Q2jJ", h: "60px" },
+            { name: "HEC Paris", id: "1KHdo0CETi275C4poc_UziKEYerQ6EWQc", h: "60px" },
+            { name: "ESSEC", id: "16YI6BRFrV1UmCcY6n02Q474OfI1Xqr7n", h: "90px" }, // 方形，放寬高度
+            { name: "Bocconi", id: "1mdQlMRSqNKF0qQO9_9BOdrk9PRD1qfqq", h: "100px" }, // 圓形，放寬高度
+            { name: "HKU", id: "1SJGvkoULgLd0-0fCykEL55cZ9qslmLM6", h: "95px" }   // 圓形，放寬高度
         ];
 
-        // ==========================================
-        // 滾動偵測元件
-        // ==========================================
         const ScrollReveal = ({ children, delay = 0 }) => {
             const ref = useRef(null);
             const [isVisible, setIsVisible] = useState(false);
@@ -257,19 +243,8 @@
                     <div className="relative z-40 bg-white">
                         <section className="py-24 px-6 flex flex-col items-center border-b border-black/5 bg-[#f7f9fc]">
                             <div className="max-w-4xl text-center mb-20">
-                                <ScrollReveal>
-                                    <div className="flex justify-center mb-8">
-                                        <div className="px-5 py-2 border-2 border-[#191c1e] font-inter text-[11px] font-black tracking-[0.4em] uppercase">
-                                            Cohort Selection Results
-                                        </div>
-                                    </div>
-                                </ScrollReveal>
-                                <ScrollReveal delay={200}>
-                                    <p className="font-inter text-xs md:text-sm text-black/50 leading-relaxed max-w-2xl mx-auto italic mb-16 uppercase">
-                                        "we received applications from a highly competitive pool of outstanding candidates worldwide. 
-                                        through a rigorous and selective review process, we carefully chose this cohort of admits."
-                                    </p>
-                                </ScrollReveal>
+                                <ScrollReveal><div className="flex justify-center mb-8"><div className="px-5 py-2 border-2 border-[#191c1e] font-inter text-[11px] font-black tracking-[0.4em] uppercase">Cohort Selection Results</div></div></ScrollReveal>
+                                <ScrollReveal delay={200}><p className="font-inter text-xs md:text-sm text-black/50 leading-relaxed max-w-2xl mx-auto italic mb-16 uppercase">"we received applications from a highly competitive pool of outstanding candidates worldwide. through a rigorous and selective review process, we carefully chose this cohort of admits."</p></ScrollReveal>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-3 w-full max-w-6xl gap-12 divide-y md:divide-y-0 md:divide-x divide-black/10 mb-32">
@@ -283,23 +258,22 @@
                                 ))}
                             </div>
 
-                            {/* 優化後的學校展示牆：更大、比例更均勻 */}
-                            <div className="w-full max-w-7xl mx-auto px-4">
-                                <div className="text-center mb-20">
+                            {/* 學校展示牆：手動視覺補償校正 */}
+                            <div className="w-full flex flex-col items-center px-4 mb-24">
+                                <div className="text-center mb-24">
                                     <span className="font-inter text-[9px] tracking-[0.4em] font-black text-[#820000] uppercase">Selections Worldwide</span>
-                                    <div className="text-[8px] text-black/30 mt-2 uppercase tracking-widest font-bold">
-                                        (Taiwan / Hong Kong / Singapore / France / UK / Italy / USA / Indonesia)
-                                    </div>
+                                    <div className="text-[8px] text-black/30 mt-2 uppercase tracking-widest font-bold">(Taiwan / Hong Kong / Singapore / France / UK / Italy / USA / Indonesia)</div>
                                 </div>
                                 
-                                <div className="grid grid-cols-2 md:grid-cols-5 gap-12 md:gap-16">
+                                <div className="school-wall-grid">
                                     {allSchools.map((school, i) => (
                                         <ScrollReveal key={i} delay={i * 80}>
                                             <div className="school-wall-item">
                                                 <img 
                                                     src={`https://drive.google.com/thumbnail?id=${school.id}&sz=w1000`} 
                                                     alt={school.name} 
-                                                    className={`school-wall-img ${school.special ? 'special-scale' : ''}`}
+                                                    style={{ height: school.h }}
+                                                    className="school-wall-img"
                                                 />
                                             </div>
                                         </ScrollReveal>
