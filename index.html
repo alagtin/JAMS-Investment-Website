@@ -37,22 +37,14 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        @keyframes marqueeSeamless {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-        .animate-marquee {
-            display: flex;
-            width: max-content;
-            animation: marqueeSeamless 40s linear infinite;
-        }
-
         .reveal-up {
-            animation: revealUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        @keyframes revealUp {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
+        .reveal-up.active {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .snap-container {
@@ -66,51 +58,50 @@
             min-height: 100vh;
         }
 
-        /* Timeline Advanced Styles */
+        /* Timeline Styles */
         .timeline-grid {
             display: grid;
             grid-template-columns: repeat(11, 1fr);
             position: relative;
-            height: 320px;
+            height: 200px;
         }
         .timeline-month-label {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 800;
             text-align: center;
             color: rgba(255,255,255,0.9);
-            border-bottom: 2px solid rgba(255,255,255,0.3);
-            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 8px;
             position: relative;
         }
         .timeline-month-label::after {
             content: '';
             position: absolute;
-            bottom: -5px;
+            bottom: -4px;
             left: 50%;
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             background: white;
             border-radius: 50%;
             transform: translateX(-50%);
         }
         .project-bar-v2 {
             position: absolute;
-            height: 22px;
-            border-radius: 4px;
+            height: 20px;
+            border-radius: 2px;
             display: flex;
             align-items: center;
-            padding: 0 12px;
-            font-size: 10px;
+            padding: 0 10px;
+            font-size: 9px;
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 0.02em;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             white-space: nowrap;
         }
         .project-bar-ip { background: white; color: var(--dip-blue); }
         .project-bar-gp { background: var(--brand-red); color: white; }
 
-        /* Topics Table V2 */
         .topics-sidebar {
             writing-mode: vertical-lr;
             transform: rotate(180deg);
@@ -124,6 +115,33 @@
             text-transform: uppercase;
             font-size: 14px;
         }
+
+        /* 學校展示牆優化樣式 */
+        .school-wall-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem; /* 縮小 Padding 讓空間變大 */
+            transition: all 0.4s ease;
+            height: 140px; /* 固定一個較大的格位高度 */
+        }
+        .school-wall-img {
+            max-height: 110px; /* 大幅增加基礎最大高度 */
+            width: auto;
+            max-width: 90%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+        /* 針對視覺面積較小的 LOGO 進行補償放大 */
+        .school-wall-img.special-scale {
+            transform: scale(1.55);
+        }
+        .school-wall-item:hover .school-wall-img {
+            transform: scale(1.1);
+        }
+        .school-wall-item:hover .school-wall-img.special-scale {
+            transform: scale(1.65);
+        }
     </style>
 </head>
 <body>
@@ -135,81 +153,41 @@
         // ==========================================
         // 全域資料區 (Global Data)
         // ==========================================
-        const pillarsHome = [
-            { title: "ELITE MENTORSHIP", desc: "Direct one-on-one pipelines with practitioners from Bulge Bracket IB and Tier-1 PE firms.", icon: "◈" },
-            { title: "TECHNICAL EDGE", desc: "Rigorous training focusing on LBO modeling, advanced valuation, and institutional research methodology.", icon: "◈" },
-            { title: "GLOBAL PIPELINE", desc: "Bridging the gap between Asian talent and global financial hubs through structured referrals.", icon: "◈" }
-        ];
-        
         const statsDip = [
             { value: "15", label: "FINAL ADMITS" },
             { value: "9%", label: "ACCEPTANCE RATE" },
             { value: "165", label: "APPLICATIONS RECEIVED" }
         ];
 
-        const schoolsHome = ["Wharton", "LBS", "NTU", "HKU", "NUS", "Columbia", "INSEAD", "NYU Stern", "LSE"];
-        const firmsHome = ["Goldman Sachs", "Morgan Stanley", "J.P. Morgan", "BlackRock", "KKR", "Point72", "Bridgewater", "Citadel"];
+        // 學校清單：標註需要縮放補償的學校
+        const allSchools = [
+            { name: "NTU Singapore", id: "1j9Cph2RqeHURiBENRFUAe53EUVakrPAg", special: false },
+            { name: "King's College London", id: "1AiX6DX6pxNdID0CpzS6ldcJHuWFHIpD6", special: false },
+            { name: "Università Bocconi", id: "1TeMXKYjKjiLHeZJkzhKj_a8WNby9uZb2", special: true }, 
+            { name: "NUS", id: "1QSDDs6SyBofuhHRwAG90iHkswgY-Q2jJ", special: false },
+            { name: "HEC Paris", id: "1PRE65z3Iot1vx_7TRs3gfmBnel_ki2uP", special: false },
+            { name: "NTU Taiwan", id: "1KHdo0CETi275C4poc_UziKEYerQ6EWQc", special: true },
+            { name: "Tsinghua University", id: "1EYjQq-saHmzekttsgb9tC_0IZHOt6NpY", special: true },
+            { name: "ESSEC", id: "16YI6BRFrV1UmCcY6n02Q474OfI1Xqr7n", special: true },
+            { name: "Kelley", id: "1mdQlMRSqNKF0qQO9_9BOdrk9PRD1qfqq", special: false },
+            { name: "HKU", id: "1XsL9Hn_ihVU3SpIpwLDRkHn503usia5h", special: true } 
+        ];
 
         // ==========================================
-        // 3D 地球元件
+        // 滾動偵測元件
         // ==========================================
-        const InteractiveGlobe = ({ size = 60, color = 0x820000, autoRotate = true }) => {
-            const mountRef = useRef(null);
-            const globeRef = useRef(null);
+        const ScrollReveal = ({ children, delay = 0 }) => {
+            const ref = useRef(null);
+            const [isVisible, setIsVisible] = useState(false);
             useEffect(() => {
-                const mount = mountRef.current;
-                const scene = new THREE.Scene();
-                const camera = new THREE.PerspectiveCamera(45, mount.clientWidth / mount.clientHeight, 1, 1000);
-                camera.position.z = 180;
-                const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-                renderer.setSize(mount.clientWidth, mount.clientHeight);
-                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-                mount.appendChild(renderer.domElement);
-                const globeGroup = new THREE.Group();
-                globeRef.current = globeGroup;
-                scene.add(globeGroup);
-                const mapUrl = "https://raw.githubusercontent.com/turban/three.js-globe/master/img/world-alpha.png";
-                const img = new Image();
-                img.crossOrigin = "anonymous";
-                img.src = mapUrl;
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    canvas.width = 1024; canvas.height = 512;
-                    ctx.drawImage(img, 0, 0, 1024, 512);
-                    const data = ctx.getImageData(0, 0, 1024, 512).data;
-                    const positions = [];
-                    for (let i = 0; i < 20000; i++) {
-                        const phi = Math.acos(-1 + (2 * i) / 20000);
-                        const theta = Math.sqrt(20000 * Math.PI) * phi;
-                        const lat = 90 - (phi * 180) / Math.PI;
-                        const lon = ((theta * 180) / Math.PI) % 360 - 180;
-                        const x_px = Math.floor(((lon + 180) / 360) * 1024);
-                        const y_px = Math.floor(((90 - lat) / 180) * 512);
-                        if (data[(y_px * 1024 + x_px) * 4] > 20) {
-                            const phi_rad = (90 - lat) * (Math.PI / 180);
-                            const theta_rad = (lon + 180) * (Math.PI / 180);
-                            positions.push(-size * Math.sin(phi_rad) * Math.cos(theta_rad), size * Math.cos(phi_rad), size * Math.sin(phi_rad) * Math.sin(theta_rad));
-                        }
-                    }
-                    const geometry = new THREE.BufferGeometry();
-                    geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-                    globeGroup.add(new THREE.Points(geometry, new THREE.PointsMaterial({ color, size: 0.7, transparent: true, opacity: 0.5 })));
-                };
-                const animate = () => {
-                    requestAnimationFrame(animate);
-                    if (globeRef.current && autoRotate) globeRef.current.rotation.y += 0.0025;
-                    renderer.render(scene, camera);
-                };
-                animate();
-                return () => { if (mount && renderer.domElement) mount.removeChild(renderer.domElement); };
-            }, [size, color, autoRotate]);
-            return <div ref={mountRef} className="w-full h-full" />;
+                const observer = new IntersectionObserver(([entry]) => {
+                    if (entry.isIntersecting) setTimeout(() => setIsVisible(true), delay);
+                }, { threshold: 0.1 });
+                if (ref.current) observer.observe(ref.current);
+                return () => observer.disconnect();
+            }, [delay]);
+            return <div ref={ref} className={`reveal-up ${isVisible ? 'active' : ''}`}>{children}</div>;
         };
-
-        // ==========================================
-        // 頁面視圖 (Views)
-        // ==========================================
 
         const HomeView = ({ scrollY, windowHeight }) => {
             const heroProgress = Math.max(0, Math.min(1, scrollY / windowHeight));
@@ -232,23 +210,12 @@
                         <div className="relative z-30">
                             <section className="snap-section w-full h-screen bg-transparent"></section>
                             <section id="about" className="snap-section relative w-full h-screen flex flex-col items-center justify-center px-6 bg-transparent">
-                                <div className="font-inter text-sm md:text-base leading-relaxed font-light max-w-2xl text-center text-white/90 drop-shadow-md -translate-y-2 md:-translate-y-4">
+                                <div className="font-inter text-sm md:text-base leading-relaxed font-light max-w-2xl text-center text-white/90 drop-shadow-md -translate-y-2">
                                     JAMS Investment is a small-but-elite, mentorship-driven finance talent platform. Through high-touch mentorship supported by solid technical training, we build stronger, more direct industry connections and a long-term pipeline. Every member can grow with greater focus, depth, and efficiency within limited resources.
                                 </div>
                             </section>
                         </div>
                     </div>
-                    <section className="snap-section bg-white flex flex-col justify-center items-center py-24 px-8 md:px-12 relative z-20">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-7xl w-full">
-                            {pillarsHome.map((p, i) => (
-                                <div key={i} className="flex flex-col items-start p-10 border border-[#191c1e]/5 bg-[#fbfcfd] hover:bg-white hover:shadow-2xl transition-all duration-500 group">
-                                    <span className="text-3xl text-[#820000] mb-6 group-hover:scale-125 transition-transform">{p.icon}</span>
-                                    <h4 className="font-inter font-black text-xl mb-4 tracking-tight uppercase">{p.title}</h4>
-                                    <p className="font-inter text-sm text-[#191c1e]/60 leading-relaxed">{p.desc}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </section>
                 </div>
             );
         };
@@ -258,8 +225,6 @@
             const dipImageScale = 1 - (dipProgress * 0.82); 
             const dipImageY = -(dipProgress * 32); 
 
-            // Timeline Config (完全依照圖片)
-            const months = ["2026/3", "2026/4", "2026/5", "2026/6", "2026/7", "2026/8", "2026/9", "2026/10", "2026/11", "2026/12", "2027/1"];
             const timelineData = [
                 { label: "IP 1: ER", type: "ip", start: 0, end: 2.3, row: 0 },
                 { label: "IP 2: LBO / ECM DCM", type: "ip", start: 3.1, end: 4.8, row: 0 },
@@ -270,7 +235,6 @@
 
             return (
                 <div className="w-full">
-                    {/* Sticky Hero Animation (與首頁一致) */}
                     <div className="relative w-full z-10">
                         <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
                             <div className="sticky top-0 h-screen w-full bg-[#0a0a0a]"></div>
@@ -291,102 +255,105 @@
                     </div>
 
                     <div className="relative z-40 bg-white">
-                        {/* Section: Cohort Selection */}
                         <section className="py-24 px-6 flex flex-col items-center border-b border-black/5 bg-[#f7f9fc]">
-                            <span className="font-inter text-[10px] tracking-[0.4em] font-black text-[#820000] uppercase mb-12">Cohort Selection Results</span>
-                            <div className="grid grid-cols-1 md:grid-cols-3 w-full max-w-6xl gap-12 divide-y md:divide-y-0 md:divide-x divide-black/10">
-                                {statsDip.map((s, i) => (
-                                    <div key={i} className="flex flex-col items-center py-8 md:py-0">
-                                        <span className="font-libre font-bold text-7xl text-[#191c1e] tracking-tighter mb-2">{s.value}</span>
-                                        <span className="font-inter font-bold text-xs tracking-widest text-black/50 uppercase">{s.label}</span>
+                            <div className="max-w-4xl text-center mb-20">
+                                <ScrollReveal>
+                                    <div className="flex justify-center mb-8">
+                                        <div className="px-5 py-2 border-2 border-[#191c1e] font-inter text-[11px] font-black tracking-[0.4em] uppercase">
+                                            Cohort Selection Results
+                                        </div>
                                     </div>
+                                </ScrollReveal>
+                                <ScrollReveal delay={200}>
+                                    <p className="font-inter text-xs md:text-sm text-black/50 leading-relaxed max-w-2xl mx-auto italic mb-16 uppercase">
+                                        "we received applications from a highly competitive pool of outstanding candidates worldwide. 
+                                        through a rigorous and selective review process, we carefully chose this cohort of admits."
+                                    </p>
+                                </ScrollReveal>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 w-full max-w-6xl gap-12 divide-y md:divide-y-0 md:divide-x divide-black/10 mb-32">
+                                {statsDip.map((s, i) => (
+                                    <ScrollReveal key={i} delay={i * 150}>
+                                        <div className="flex flex-col items-center py-8 md:py-0 group">
+                                            <span className="font-libre font-bold text-7xl text-[#191c1e] tracking-tighter mb-2 group-hover:text-[#820000] transition-colors">{s.value}</span>
+                                            <span className="font-inter font-bold text-[10px] tracking-widest text-black/40 uppercase">{s.label}</span>
+                                        </div>
+                                    </ScrollReveal>
                                 ))}
+                            </div>
+
+                            {/* 優化後的學校展示牆：更大、比例更均勻 */}
+                            <div className="w-full max-w-7xl mx-auto px-4">
+                                <div className="text-center mb-20">
+                                    <span className="font-inter text-[9px] tracking-[0.4em] font-black text-[#820000] uppercase">Selections Worldwide</span>
+                                    <div className="text-[8px] text-black/30 mt-2 uppercase tracking-widest font-bold">
+                                        (Taiwan / Hong Kong / Singapore / France / UK / Italy / USA / Indonesia)
+                                    </div>
+                                </div>
+                                
+                                <div className="grid grid-cols-2 md:grid-cols-5 gap-12 md:gap-16">
+                                    {allSchools.map((school, i) => (
+                                        <ScrollReveal key={i} delay={i * 80}>
+                                            <div className="school-wall-item">
+                                                <img 
+                                                    src={`https://drive.google.com/thumbnail?id=${school.id}&sz=w1000`} 
+                                                    alt={school.name} 
+                                                    className={`school-wall-img ${school.special ? 'special-scale' : ''}`}
+                                                />
+                                            </div>
+                                        </ScrollReveal>
+                                    ))}
+                                </div>
                             </div>
                         </section>
 
-                        {/* Section: Education Planning (重製線性時間軸) */}
-                        <section className="relative w-full bg-[#1e455e] py-32 px-6 overflow-hidden">
-                            {/* 山景背景背景 */}
+                        <section className="relative w-full bg-[#1e455e] py-20 px-6 overflow-hidden">
                             <div className="absolute inset-0 bg-cover bg-center opacity-20 pointer-events-none" style={{ backgroundImage: "url('https://drive.google.com/thumbnail?id=1bF-GwJQpgupCHzX2cNal9KAYgDdvsea1&sz=w3000')" }} />
-                            
                             <div className="max-w-6xl mx-auto relative z-10 text-white">
-                                <div className="text-center mb-20">
-                                    <h2 className="font-libre text-5xl md:text-6xl uppercase tracking-tighter mb-4">Education Planning</h2>
-                                    <p className="font-inter text-xs tracking-[0.4em] opacity-60 font-bold uppercase">JAMS Direct Industry Program 2026</p>
+                                <div className="text-center mb-12">
+                                    <h2 className="font-libre text-4xl md:text-5xl uppercase tracking-tighter mb-2">Education Planning</h2>
+                                    <p className="font-inter text-[9px] tracking-[0.4em] opacity-60 font-bold uppercase">JAMS Direct Industry Program 2026</p>
                                 </div>
-
-                                {/* Linear Timeline Container */}
-                                <div className="mb-32 overflow-x-auto no-scrollbar">
-                                    <div className="min-w-[1000px] pb-10">
-                                        {/* Legend */}
-                                        <div className="flex justify-center gap-12 mb-16 text-[10px] font-black tracking-[0.2em] uppercase">
-                                            <div className="flex items-center gap-3"><div className="w-3 h-3 bg-white"></div> Individual Project</div>
-                                            <div className="flex items-center gap-3"><div className="w-3 h-3 bg-[#ff3b3b]"></div> Group Project</div>
+                                <div className="mb-20 overflow-x-auto no-scrollbar pb-5">
+                                    <div className="min-w-[1000px]">
+                                        <div className="flex justify-center gap-10 mb-10 text-[9px] font-black tracking-[0.2em] uppercase">
+                                            <div className="flex items-center gap-2"><div className="w-2.5 h-2.5 bg-white"></div> Individual Project</div>
+                                            <div className="flex items-center gap-2"><div className="w-2.5 h-2.5 bg-[#ff3b3b]"></div> Group Project</div>
                                         </div>
-
                                         <div className="timeline-grid">
-                                            {months.map((m, i) => (
+                                            {["2026/3", "2026/4", "2026/5", "2026/6", "2026/7", "2026/8", "2026/9", "2026/10", "2026/11", "2026/12", "2027/1"].map((m, i) => (
                                                 <div key={i} className="timeline-month-label">{m}</div>
                                             ))}
-                                            
-                                            {/* Data-driven project bars */}
                                             {timelineData.map((p, i) => (
-                                                <div 
-                                                    key={i} 
-                                                    className={`project-bar-v2 ${p.type === 'ip' ? 'project-bar-ip' : 'project-bar-gp'}`}
-                                                    style={{
-                                                        left: `calc(${(p.start / 10) * 100}%)`,
-                                                        width: `calc(${( (p.end - p.start) / 10) * 100}%)`,
-                                                        top: `${80 + (p.row * 40)}px`
-                                                    }}
-                                                >
-                                                    {p.label}
-                                                </div>
+                                                <div key={i} className={`project-bar-v2 ${p.type === 'ip' ? 'project-bar-ip' : 'project-bar-gp'}`} style={{ left: `calc(${(p.start / 10) * 100}%)`, width: `calc(${( (p.end - p.start) / 10) * 100}%)`, top: `${50 + (p.row * 32)}px` }}>{p.label}</div>
                                             ))}
                                         </div>
                                     </div>
                                 </div>
-
-                                {/* Topics Table (複刻圖片排版) */}
                                 <div className="bg-white rounded-sm shadow-2xl overflow-hidden text-[#1e455e] flex flex-col md:flex-row">
-                                    <div className="topics-sidebar p-6 md:w-16">TOPICS</div>
-                                    
+                                    <div className="topics-sidebar p-4 md:w-14">TOPICS</div>
                                     <div className="flex-1">
                                         <div className="grid grid-cols-1 md:grid-cols-2">
-                                            {/* Left: Topic List */}
                                             <div className="divide-y divide-black/5 border-r border-black/5">
-                                                {[
-                                                    "Modeling Fundamentals", "3FS Projection", "Advanced Accounting",
-                                                    "Enterprise Value & Equity Value", "WACC & DCF", "Trading Comparables",
-                                                    "ECM / DCM Basics & Modeling", "Project Finance Modeling",
-                                                    "Accretion/DILUTION Analysis", "M&A Modeling", "LBO Modeling"
-                                                ].map((t, i) => (
-                                                    <div key={i} className="p-4 text-xs font-bold uppercase tracking-wide hover:bg-slate-50 transition-colors flex items-center justify-between group">
-                                                        <span>{t}</span>
-                                                        <span className="text-[#ff3b3b] opacity-0 group-hover:opacity-100 transition-opacity">◈</span>
+                                                {["Modeling Fundamentals", "3FS Projection", "Advanced Accounting", "Enterprise Value & Equity Value", "WACC & DCF", "Trading Comparables", "ECM / DCM Basics & Modeling", "Project Finance Modeling", "Accretion/DILUTION Analysis", "M&A Modeling", "LBO Modeling"].map((t, i) => (
+                                                    <div key={i} className="p-3 text-[11px] font-bold uppercase tracking-wide hover:bg-slate-50 transition-colors flex items-center justify-between group">
+                                                        <span>{t}</span><span className="text-[#ff3b3b] opacity-0 group-hover:opacity-100 transition-opacity">◈</span>
                                                     </div>
                                                 ))}
                                             </div>
-
-                                            {/* Right: Grouped Scopes */}
                                             <div className="bg-slate-50 flex flex-col divide-y divide-black/5 font-inter">
-                                                <div className="p-8 flex-1 flex flex-col justify-center items-center text-center">
-                                                    <div className="text-[10px] font-black opacity-30 uppercase mb-2">Scope A</div>
-                                                    <div className="text-sm font-extrabold uppercase">Individual Project 1: <br/>Equity Research</div>
+                                                <div className="p-6 flex-1 flex flex-col justify-center items-center text-center">
+                                                    <div className="text-[9px] font-black opacity-30 uppercase mb-1">Scope A</div>
+                                                    <div className="text-xs font-extrabold uppercase leading-tight">Individual Project 1: <br/>Equity Research</div>
                                                 </div>
-                                                <div className="p-8 flex-1 flex flex-col justify-center items-center text-center">
-                                                    <div className="text-[10px] font-black opacity-30 uppercase mb-2">Scope B</div>
-                                                    <div className="text-sm font-extrabold uppercase leading-tight">
-                                                        Individual Project 2: ECM / DCM <br/>
-                                                        Individual Project 3: Project Finance
-                                                    </div>
+                                                <div className="p-6 flex-1 flex flex-col justify-center items-center text-center">
+                                                    <div className="text-[9px] font-black opacity-30 uppercase mb-1">Scope B</div>
+                                                    <div className="text-xs font-extrabold uppercase leading-tight">Individual Project 2: ECM / DCM <br/>Individual Project 3: Project Finance</div>
                                                 </div>
-                                                <div className="p-8 flex-1 flex flex-col justify-center items-center text-center bg-white">
-                                                    <div className="text-[10px] font-black text-[#ff3b3b] uppercase mb-2 italic">Scope C - Capstone</div>
-                                                    <div className="text-sm font-extrabold uppercase leading-tight">
-                                                        Group Project 1: LBO PJ <br/>
-                                                        Individual Project 2: LBO Modeling
-                                                    </div>
+                                                <div className="p-6 flex-1 flex flex-col justify-center items-center text-center bg-white">
+                                                    <div className="text-[9px] font-black text-[#ff3b3b] uppercase mb-1 italic">Scope C - Capstone</div>
+                                                    <div className="text-xs font-extrabold uppercase leading-tight">Group Project 1: LBO PJ <br/>Individual Project 2: LBO Modeling</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -403,7 +370,7 @@
             <div className="w-full">
                 <section className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden bg-[#0a0a0a]">
                     <div className="absolute inset-0 bg-cover bg-center opacity-40" style={{ backgroundImage: "url('https://drive.google.com/thumbnail?id=1bF-GwJQpgupCHzX2cNal9KAYgDdvsea1&sz=w3000')" }} />
-                    <div className="relative z-20 flex flex-col items-center text-center px-6 reveal-up">
+                    <div className="relative z-20 flex flex-col items-center text-center px-6 reveal-up active">
                         <span className="font-inter text-xs tracking-[0.5em] text-[#ff3b3b] uppercase mb-4 font-bold">The People</span>
                         <h1 className="font-libre font-bold text-5xl md:text-7xl lg:text-[5rem] tracking-tighter uppercase leading-[1.1] text-white">MEET THE <br/> JAMS TEAM</h1>
                         <p className="font-inter text-sm md:text-base font-light text-white/50 mt-8 tracking-widest uppercase">Structure coming soon...</p>
@@ -412,15 +379,11 @@
             </div>
         );
 
-        // ==========================================
-        // 主應用程式 (自訂路由邏輯)
-        // ==========================================
         const App = () => {
             const getPageFromUrl = () => {
                 const params = new URLSearchParams(window.location.search);
                 return params.get('page') || 'home';
             };
-
             const [currentPage, setCurrentPage] = useState(getPageFromUrl());
             const [scrolled, setScrolled] = useState(false);
             const [scrollY, setScrollY] = useState(0);
@@ -438,21 +401,11 @@
                 try {
                     const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + (page === 'home' ? '' : `?page=${page}`);
                     window.history.pushState({ path: newUrl }, '', newUrl);
-                } catch (e) { console.log("Routing update."); }
-            };
-
-            const handleAboutClick = () => {
-                if (currentPage !== 'home') {
-                    handleNavigate('home');
-                } else {
-                    if (containerRef.current) containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-                }
+                } catch (e) {}
             };
 
             useEffect(() => {
                 setWindowHeight(window.innerHeight);
-                const handleResize = () => setWindowHeight(window.innerHeight);
-                window.addEventListener('resize', handleResize);
                 const container = containerRef.current;
                 const handleScroll = () => {
                     const currentScroll = container.scrollTop;
@@ -463,12 +416,8 @@
                         setScrolled(currentScroll > 100);
                     }
                 };
-                handleScroll();
                 container.addEventListener('scroll', handleScroll, { passive: true });
-                return () => {
-                    window.removeEventListener('resize', handleResize);
-                    container.removeEventListener('scroll', handleScroll);
-                };
+                return () => container.removeEventListener('scroll', handleScroll);
             }, [currentPage]);
 
             useEffect(() => { if (containerRef.current) containerRef.current.scrollTop = 0; }, [currentPage]);
@@ -476,22 +425,18 @@
             return (
                 <div ref={containerRef} className="snap-container no-scrollbar relative bg-[#0a0a0a]">
                     <nav className={`fixed top-0 left-0 z-50 w-full flex items-center justify-between px-6 md:px-12 transition-all duration-700 ${scrolled ? 'bg-white/95 backdrop-blur-md text-[#191c1e] py-5 shadow-sm' : 'bg-transparent text-white py-8'}`}>
-                        <div className="flex flex-col">
-                            <button onClick={() => handleNavigate('home')} className="group text-left focus:outline-none">
-                                <span className={`font-libre font-bold text-xl uppercase tracking-tighter block ${scrolled ? '' : 'drop-shadow-md'}`}>JAMS INVESTMENT</span>
-                            </button>
-                        </div>
+                        <button onClick={() => handleNavigate('home')} className="group focus:outline-none">
+                            <span className={`font-libre font-bold text-xl uppercase tracking-tighter block ${scrolled ? '' : 'drop-shadow-md'}`}>JAMS INVESTMENT</span>
+                        </button>
                         <div className={`hidden md:flex gap-10 font-inter text-[10px] font-bold tracking-[0.2em] uppercase ${scrolled ? '' : 'drop-shadow-md'}`}>
-                            <button onClick={handleAboutClick} className="hover:text-[#ff3b3b] transition-colors focus:outline-none tracking-[0.2em]">ABOUT</button>
+                            <button onClick={() => { handleNavigate('home'); setTimeout(() => { if (containerRef.current) containerRef.current.scrollTo({ top: 0, behavior: 'smooth' }); }, 100); }} className="hover:text-[#ff3b3b] transition-colors focus:outline-none tracking-[0.2em]">ABOUT</button>
                             <button onClick={() => handleNavigate('teams')} className={`hover:text-[#ff3b3b] transition-colors focus:outline-none tracking-[0.2em] ${currentPage === 'teams' ? 'text-[#ff3b3b]' : ''}`}>TEAMS</button>
                             <button onClick={() => handleNavigate('dip')} className={`hover:text-[#ff3b3b] transition-colors focus:outline-none tracking-[0.2em] ${currentPage === 'dip' ? 'text-[#ff3b3b]' : ''}`}>DIP</button>
                         </div>
                     </nav>
-
                     {currentPage === 'home' && <HomeView scrollY={scrollY} windowHeight={windowHeight} />}
                     {currentPage === 'dip' && <DipView scrollY={scrollY} windowHeight={windowHeight} />}
                     {currentPage === 'teams' && <TeamsView />}
-
                     <footer className="bg-[#0a0a0a] text-white px-8 md:px-12 py-16 flex flex-col md:flex-row justify-between items-center text-center md:text-left relative z-20 border-t border-white/5">
                         <button onClick={() => handleNavigate('home')} className="font-libre font-bold text-xl uppercase tracking-tighter hover:text-[#ff3b3b] transition-colors mb-4 md:mb-0 focus:outline-none">JAMS INVESTMENT</button>
                         <span className="font-inter text-[9px] tracking-[0.2em] font-bold opacity-30 uppercase">© 2026 JAMS INVESTMENT. All Rights Reserved.</span>
@@ -499,7 +444,6 @@
                 </div>
             );
         };
-
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
