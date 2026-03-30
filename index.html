@@ -16,9 +16,11 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400;1,700&display=swap');
         
         :root {
-            --brand-red: #820000;
+            --brand-red: #ff3b3b;
+            --brand-dark-red: #820000;
             --brand-dark: #191c1e;
             --brand-light: #f7f9fc;
+            --dip-blue: #1e455e;
         }
 
         body { 
@@ -64,32 +66,63 @@
             min-height: 100vh;
         }
 
-        .stat-card {
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        /* Timeline Advanced Styles */
+        .timeline-grid {
+            display: grid;
+            grid-template-columns: repeat(11, 1fr);
+            position: relative;
+            height: 320px;
         }
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+        .timeline-month-label {
+            font-size: 11px;
+            font-weight: 800;
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            padding-bottom: 10px;
+            position: relative;
         }
+        .timeline-month-label::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            transform: translateX(-50%);
+        }
+        .project-bar-v2 {
+            position: absolute;
+            height: 22px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            white-space: nowrap;
+        }
+        .project-bar-ip { background: white; color: var(--dip-blue); }
+        .project-bar-gp { background: var(--brand-red); color: white; }
 
-        .logo-item {
-            filter: grayscale(100%);
-            opacity: 0.4;
-            transition: all 0.4s ease;
-        }
-        .logo-item:hover {
-            filter: grayscale(0%);
-            opacity: 1;
-            transform: scale(1.05);
-        }
-
-        .topic-item {
-            transition: all 0.3s ease;
-        }
-        .topic-item:hover {
-            padding-left: 1rem;
-            color: var(--brand-red);
-            border-left-color: var(--brand-red);
+        /* Topics Table V2 */
+        .topics-sidebar {
+            writing-mode: vertical-lr;
+            transform: rotate(180deg);
+            background: var(--dip-blue);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            font-size: 14px;
         }
     </style>
 </head>
@@ -107,43 +140,15 @@
             { title: "TECHNICAL EDGE", desc: "Rigorous training focusing on LBO modeling, advanced valuation, and institutional research methodology.", icon: "◈" },
             { title: "GLOBAL PIPELINE", desc: "Bridging the gap between Asian talent and global financial hubs through structured referrals.", icon: "◈" }
         ];
-        const statsHome = [
-            { value: "85+", label: "ALUMNI", sub: "PLATFORM DIRECTORY" },
-            { value: "32", label: "SCHOOLS", sub: "GLOBAL INSTITUTIONS" },
-            { value: "29", label: "MAJORS", sub: "TECHNICAL FIELDS" },
-            { value: "53+", label: "FIRMS", sub: "PLACEMENT NETWORK" }
-        ];
-        const schoolsHome = ["Wharton", "LBS", "NTU", "HKU", "NUS", "Columbia", "INSEAD", "NYU Stern", "LSE"];
-        const firmsHome = ["Goldman Sachs", "Morgan Stanley", "J.P. Morgan", "BlackRock", "KKR", "Point72", "Bridgewater", "Citadel"];
-
+        
         const statsDip = [
             { value: "15", label: "FINAL ADMITS" },
             { value: "9%", label: "ACCEPTANCE RATE" },
             { value: "165", label: "APPLICATIONS RECEIVED" }
         ];
-        const universitiesDip = ["NTU SINGAPORE", "KING'S COLLEGE LONDON", "BOCCONI MILANO", "NUS", "HEC PARIS", "NTU TAIWAN", "TSINGHUA", "ESSEC", "KELLEY", "HKU"];
-        const globalLocationsDip = ["TAIWAN", "HONG KONG", "SINGAPORE", "FRANCE", "UK", "ITALY", "USA", "INDONESIA"];
-        const educationPlanning = [
-            { month: "2026/3-5", title: "IP 1: Equity Research" },
-            { month: "2026/6-7", title: "IP 2: LBO / ECM DCM" },
-            { month: "2026/5-10", title: "GP 1: LBO Project" },
-            { month: "2026/9-10", title: "IP 3: Project Finance / M&A" },
-            { month: "2026/8-12", title: "GP 2: M&A Project" }
-        ];
-        const educationTopics = [
-            "MODELING FUNDAMENTALS", "3FS PROJECTION", "ADVANCED ACCOUNTING", 
-            "ENTERPRISE VALUE & EQUITY VALUE", "WACC & DCF", "TRADING COMPARABLES", 
-            "ECM / DCM BASICS & MODELING", "PROJECT FINANCE MODELING", 
-            "ACCRETION/DILUTION ANALYSIS", "M&A MODELING", "LBO MODELING"
-        ];
-        const mentorFirms = ["BNP PARIBAS", "CITIBANK", "TEMASEK", "DBS", "HDRE", "HAITONG", "HKIB", "KHL"];
-        const speakerFirms = ["ARROWROOT", "KHL", "SCOTIABANK", "NOMURA", "CITIBANK", "TGVEST", "J.P. MORGAN", "AB VALUE", "NEFIN", "DBS", "HASI", "LAYER7", "HSBC", "DELOITTE", "ORSTED", "JEFFERIES", "BLUE OWL"];
-        const guestTopicsDip = [
-            "DEAL ADVISORY", "RENEWABLE ENERGY PROJECT FINANCE", "PRIVATE EQUITY IN MIAMI",
-            "NYC BOUTIQUE INVESTMENT BANK", "NYC POWER & UTILITIES INVESTMENT BANK",
-            "TAIWAN GROWTH EQUITY", "EQUITY RESEARCH", "EUROPE INFRASTRUCTURE PRIVATE EQUITY",
-            "HONG KONG PRIVATE BANKING", "TAIWAN PRIVATE EQUITY", "FIXED INCOME & ASSET MANAGEMENT"
-        ];
+
+        const schoolsHome = ["Wharton", "LBS", "NTU", "HKU", "NUS", "Columbia", "INSEAD", "NYU Stern", "LSE"];
+        const firmsHome = ["Goldman Sachs", "Morgan Stanley", "J.P. Morgan", "BlackRock", "KKR", "Point72", "Bridgewater", "Citadel"];
 
         // ==========================================
         // 3D 地球元件
@@ -244,47 +249,6 @@
                             ))}
                         </div>
                     </section>
-                    <section className="snap-section bg-[#111] text-white flex flex-col overflow-hidden px-6 md:px-12 py-24 relative z-20">
-                        <div className="flex flex-col lg:flex-row items-center gap-16 mb-20 w-full max-w-7xl mx-auto">
-                            <div className="lg:w-1/2 space-y-10">
-                                <h3 className="font-libre font-bold text-5xl md:text-7xl uppercase tracking-tighter">GLOBAL <br/>NETWORK</h3>
-                                <div className="grid grid-cols-2 gap-4">
-                                    {statsHome.map((s, i) => (
-                                        <div key={i} className="bg-white/5 p-8 border border-white/10 stat-card">
-                                            <div className="text-4xl md:text-6xl font-inter font-black text-[#820000]">{s.value}</div>
-                                            <div className="text-[10px] font-inter font-bold tracking-widest mt-2 uppercase">{s.label}</div>
-                                            <div className="text-[8px] font-inter opacity-40 uppercase tracking-tighter">{s.sub}</div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="lg:w-1/2 h-[400px] md:h-[600px] flex items-center justify-center">
-                                <InteractiveGlobe size={85} color={0xffffff} autoRotate={false} />
-                            </div>
-                        </div>
-                    </section>
-                    <section className="snap-section bg-white py-24 px-6 md:px-12 flex flex-col justify-center overflow-hidden relative z-20">
-                        <div className="text-center mb-16 relative">
-                            <h3 className="font-inter text-[#191c1e] text-4xl md:text-6xl font-black tracking-tighter uppercase mb-4 relative z-10">THE FOOTPRINT</h3>
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-libre italic text-[120px] text-[#820000] opacity-[0.04] pointer-events-none whitespace-nowrap">ACADEMIC & FIRMS</div>
-                        </div>
-                        <div className="space-y-4">
-                            <div className="bg-[#f7f9fc] py-12 border-y border-[#191c1e]/5">
-                                <div className="animate-marquee whitespace-nowrap">
-                                    {[...schoolsHome, ...schoolsHome].map((name, i) => (
-                                        <span key={i} className="mx-16 font-libre font-bold text-2xl text-[#191c1e] tracking-tighter italic logo-item">{name}</span>
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="bg-[#f7f9fc] py-12 border-y border-[#191c1e]/5">
-                                <div className="animate-marquee whitespace-nowrap" style={{animationDirection: 'reverse'}}>
-                                    {[...firmsHome, ...firmsHome].map((name, i) => (
-                                        <span key={i} className="mx-16 font-inter font-black text-2xl text-[#191c1e] tracking-tight uppercase logo-item">{name}</span>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    </section>
                 </div>
             );
         };
@@ -294,20 +258,26 @@
             const dipImageScale = 1 - (dipProgress * 0.82); 
             const dipImageY = -(dipProgress * 32); 
 
+            // Timeline Config (完全依照圖片)
+            const months = ["2026/3", "2026/4", "2026/5", "2026/6", "2026/7", "2026/8", "2026/9", "2026/10", "2026/11", "2026/12", "2027/1"];
+            const timelineData = [
+                { label: "IP 1: ER", type: "ip", start: 0, end: 2.3, row: 0 },
+                { label: "IP 2: LBO / ECM DCM", type: "ip", start: 3.1, end: 4.8, row: 0 },
+                { label: "GP 1: LBO PJ", type: "gp", start: 1.8, end: 7, row: 1 },
+                { label: "IP 3: Project Finance / M&A", type: "ip", start: 5.5, end: 7.2, row: 2 },
+                { label: "GP 2: M&A", type: "gp", start: 4.5, end: 9.2, row: 3 }
+            ];
+
             return (
                 <div className="w-full">
+                    {/* Sticky Hero Animation (與首頁一致) */}
                     <div className="relative w-full z-10">
                         <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
                             <div className="sticky top-0 h-screen w-full bg-[#0a0a0a]"></div>
                         </div>
                         <div className="absolute inset-0 w-full h-full pointer-events-none z-20">
                             <div className="sticky top-0 h-screen w-full flex items-center justify-center px-4 overflow-hidden">
-                                <img 
-                                    src="https://drive.google.com/thumbnail?id=1WOS-DsLJesu97SGWafm-W_SVH46RNaLq&sz=w3000" 
-                                    alt="DIP Masterpiece" 
-                                    style={{ transform: `translateY(${dipImageY}vh) scale(${dipImageScale})`, transition: 'transform 0.1s ease-out' }}
-                                    className="w-[85%] md:w-[65%] lg:w-[45%] max-w-[1000px] object-contain drop-shadow-[0_0_60px_rgba(255,255,255,0.1)]"
-                                />
+                                <img src="https://drive.google.com/thumbnail?id=1WOS-DsLJesu97SGWafm-W_SVH46RNaLq&sz=w3000" alt="DIP" style={{ transform: `translateY(${dipImageY}vh) scale(${dipImageScale})`, transition: 'transform 0.1s ease-out' }} className="w-[85%] md:w-[65%] lg:w-[45%] max-w-[1000px] object-contain drop-shadow-[0_0_60px_rgba(255,255,255,0.1)]" />
                             </div>
                         </div>
                         <div className="relative z-30">
@@ -319,8 +289,10 @@
                             </section>
                         </div>
                     </div>
+
                     <div className="relative z-40 bg-white">
-                        <section className="py-32 px-6 flex flex-col items-center border-b border-black/5">
+                        {/* Section: Cohort Selection */}
+                        <section className="py-24 px-6 flex flex-col items-center border-b border-black/5 bg-[#f7f9fc]">
                             <span className="font-inter text-[10px] tracking-[0.4em] font-black text-[#820000] uppercase mb-12">Cohort Selection Results</span>
                             <div className="grid grid-cols-1 md:grid-cols-3 w-full max-w-6xl gap-12 divide-y md:divide-y-0 md:divide-x divide-black/10">
                                 {statsDip.map((s, i) => (
@@ -331,25 +303,93 @@
                                 ))}
                             </div>
                         </section>
-                        <section className="bg-[#f7f9fc] py-32 px-6">
-                            <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-20">
-                                <div className="lg:w-1/3">
-                                    <h2 className="font-libre text-5xl text-[#191c1e] leading-tight mb-8">Education <br/>Planning</h2>
-                                    <div className="space-y-6">
-                                        {educationPlanning.map((p, i) => (
-                                            <div key={i} className="border-l-2 border-[#820000]/20 pl-4 py-1">
-                                                <div className="text-[10px] font-bold text-[#820000]">{p.month}</div>
-                                                <div className="text-sm font-bold text-[#191c1e]">{p.title}</div>
-                                            </div>
-                                        ))}
+
+                        {/* Section: Education Planning (重製線性時間軸) */}
+                        <section className="relative w-full bg-[#1e455e] py-32 px-6 overflow-hidden">
+                            {/* 山景背景背景 */}
+                            <div className="absolute inset-0 bg-cover bg-center opacity-20 pointer-events-none" style={{ backgroundImage: "url('https://drive.google.com/thumbnail?id=1bF-GwJQpgupCHzX2cNal9KAYgDdvsea1&sz=w3000')" }} />
+                            
+                            <div className="max-w-6xl mx-auto relative z-10 text-white">
+                                <div className="text-center mb-20">
+                                    <h2 className="font-libre text-5xl md:text-6xl uppercase tracking-tighter mb-4">Education Planning</h2>
+                                    <p className="font-inter text-xs tracking-[0.4em] opacity-60 font-bold uppercase">JAMS Direct Industry Program 2026</p>
+                                </div>
+
+                                {/* Linear Timeline Container */}
+                                <div className="mb-32 overflow-x-auto no-scrollbar">
+                                    <div className="min-w-[1000px] pb-10">
+                                        {/* Legend */}
+                                        <div className="flex justify-center gap-12 mb-16 text-[10px] font-black tracking-[0.2em] uppercase">
+                                            <div className="flex items-center gap-3"><div className="w-3 h-3 bg-white"></div> Individual Project</div>
+                                            <div className="flex items-center gap-3"><div className="w-3 h-3 bg-[#ff3b3b]"></div> Group Project</div>
+                                        </div>
+
+                                        <div className="timeline-grid">
+                                            {months.map((m, i) => (
+                                                <div key={i} className="timeline-month-label">{m}</div>
+                                            ))}
+                                            
+                                            {/* Data-driven project bars */}
+                                            {timelineData.map((p, i) => (
+                                                <div 
+                                                    key={i} 
+                                                    className={`project-bar-v2 ${p.type === 'ip' ? 'project-bar-ip' : 'project-bar-gp'}`}
+                                                    style={{
+                                                        left: `calc(${(p.start / 10) * 100}%)`,
+                                                        width: `calc(${( (p.end - p.start) / 10) * 100}%)`,
+                                                        top: `${80 + (p.row * 40)}px`
+                                                    }}
+                                                >
+                                                    {p.label}
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="lg:w-2/3 bg-white p-12 border border-black/5 shadow-sm">
-                                    <h3 className="font-inter text-[10px] tracking-[0.3em] font-black text-black/30 uppercase border-b border-black/5 pb-4 mb-6">Core Topics</h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
-                                        {educationTopics.map((topic, i) => (
-                                            <div key={i} className="py-3 border-b border-black/5 text-black/70 font-inter font-bold text-sm tracking-wide">{topic}</div>
-                                        ))}
+
+                                {/* Topics Table (複刻圖片排版) */}
+                                <div className="bg-white rounded-sm shadow-2xl overflow-hidden text-[#1e455e] flex flex-col md:flex-row">
+                                    <div className="topics-sidebar p-6 md:w-16">TOPICS</div>
+                                    
+                                    <div className="flex-1">
+                                        <div className="grid grid-cols-1 md:grid-cols-2">
+                                            {/* Left: Topic List */}
+                                            <div className="divide-y divide-black/5 border-r border-black/5">
+                                                {[
+                                                    "Modeling Fundamentals", "3FS Projection", "Advanced Accounting",
+                                                    "Enterprise Value & Equity Value", "WACC & DCF", "Trading Comparables",
+                                                    "ECM / DCM Basics & Modeling", "Project Finance Modeling",
+                                                    "Accretion/DILUTION Analysis", "M&A Modeling", "LBO Modeling"
+                                                ].map((t, i) => (
+                                                    <div key={i} className="p-4 text-xs font-bold uppercase tracking-wide hover:bg-slate-50 transition-colors flex items-center justify-between group">
+                                                        <span>{t}</span>
+                                                        <span className="text-[#ff3b3b] opacity-0 group-hover:opacity-100 transition-opacity">◈</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            {/* Right: Grouped Scopes */}
+                                            <div className="bg-slate-50 flex flex-col divide-y divide-black/5 font-inter">
+                                                <div className="p-8 flex-1 flex flex-col justify-center items-center text-center">
+                                                    <div className="text-[10px] font-black opacity-30 uppercase mb-2">Scope A</div>
+                                                    <div className="text-sm font-extrabold uppercase">Individual Project 1: <br/>Equity Research</div>
+                                                </div>
+                                                <div className="p-8 flex-1 flex flex-col justify-center items-center text-center">
+                                                    <div className="text-[10px] font-black opacity-30 uppercase mb-2">Scope B</div>
+                                                    <div className="text-sm font-extrabold uppercase leading-tight">
+                                                        Individual Project 2: ECM / DCM <br/>
+                                                        Individual Project 3: Project Finance
+                                                    </div>
+                                                </div>
+                                                <div className="p-8 flex-1 flex flex-col justify-center items-center text-center bg-white">
+                                                    <div className="text-[10px] font-black text-[#ff3b3b] uppercase mb-2 italic">Scope C - Capstone</div>
+                                                    <div className="text-sm font-extrabold uppercase leading-tight">
+                                                        Group Project 1: LBO PJ <br/>
+                                                        Individual Project 2: LBO Modeling
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -376,7 +416,6 @@
         // 主應用程式 (自訂路由邏輯)
         // ==========================================
         const App = () => {
-            // 從 URL 解析出當前的 page 參數，預設為 home
             const getPageFromUrl = () => {
                 const params = new URLSearchParams(window.location.search);
                 return params.get('page') || 'home';
@@ -388,40 +427,28 @@
             const [windowHeight, setWindowHeight] = useState(800);
             const containerRef = useRef(null);
 
-            // 處理瀏覽器「上一頁/下一頁」按鈕
             useEffect(() => {
-                const handlePopState = () => {
-                    setCurrentPage(getPageFromUrl());
-                };
+                const handlePopState = () => setCurrentPage(getPageFromUrl());
                 window.addEventListener('popstate', handlePopState);
                 return () => window.removeEventListener('popstate', handlePopState);
             }, []);
 
-            // 導航函數 (推入新網址)
             const handleNavigate = (page) => {
                 setCurrentPage(page);
                 try {
                     const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + (page === 'home' ? '' : `?page=${page}`);
                     window.history.pushState({ path: newUrl }, '', newUrl);
-                } catch (e) {
-                    console.log("Canvas iframe routing restricted, state updated locally.");
-                }
+                } catch (e) { console.log("Routing update."); }
             };
 
-            // 修改：點擊 ABOUT 導向首頁最頂端 (Hero Section)
             const handleAboutClick = () => {
                 if (currentPage !== 'home') {
                     handleNavigate('home');
-                    // 導向 home 後，下方的 useEffect 會自動將 scrollTop 設為 0
                 } else {
-                    // 如果已經在首頁，則平滑滾動到最頂端
-                    if (containerRef.current) {
-                        containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-                    }
+                    if (containerRef.current) containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
                 }
             };
 
-            // 視窗滾動監聽
             useEffect(() => {
                 setWindowHeight(window.innerHeight);
                 const handleResize = () => setWindowHeight(window.innerHeight);
