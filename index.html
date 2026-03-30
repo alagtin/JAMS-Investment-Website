@@ -120,7 +120,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 140px;
+            height: 180px; /* 拉大展示高度，確保大圖有足夠空間 */
             transition: transform 0.4s ease;
         }
         .school-wall-img {
@@ -146,20 +146,19 @@
             { value: "165", label: "APPLICATIONS RECEIVED" }
         ];
 
-        // 學校清單：精確對位你提供的 10 個連結順序，並賦予視覺面積補償 (weight)
-        // 圓形或方形 LOGO 視覺上會縮小，因此需要較高的 max-height
-        // 長形 LOGO 視覺上較大，因此需要較低的中高度限制
+        // 學校清單：針對視覺弱勢標誌（如圓形或方形）進行高度補償
+        // 台大與 Bocconi 大幅增加高度以達成視覺平衡
         const allSchools = [
-            { name: "NTU Singapore", id: "1j9Cph2RqeHURiBENRFUAe53EUVakrPAg", h: "60px" },
-            { name: "KCL", id: "1AiX6DX6pxNdID0CpzS6ldcJHuWFHIpD6", h: "65px" },
-            { name: "Kelley", id: "1yrBkP5JdIruq3FcCe_fY3ifJ8wgBmIWQ", h: "55px" },
-            { name: "NTU Taiwan", id: "1taYfqGVmoHNrKj4CcrCC2l6o_5Ja6y54", h: "55px" },
-            { name: "Tsinghua", id: "1LLKAIAt2T7iDojbcCFtTEScDgWqmmNUP", h: "100px" }, // 圓形，放寬高度
-            { name: "NUS", id: "1QSDDs6SyBofuhHRwAG90iHkswgY-Q2jJ", h: "60px" },
-            { name: "HEC Paris", id: "1KHdo0CETi275C4poc_UziKEYerQ6EWQc", h: "60px" },
-            { name: "ESSEC", id: "16YI6BRFrV1UmCcY6n02Q474OfI1Xqr7n", h: "90px" }, // 方形，放寬高度
-            { name: "Bocconi", id: "1mdQlMRSqNKF0qQO9_9BOdrk9PRD1qfqq", h: "100px" }, // 圓形，放寬高度
-            { name: "HKU", id: "1SJGvkoULgLd0-0fCykEL55cZ9qslmLM6", h: "95px" }   // 圓形，放寬高度
+            { name: "NTU Singapore", id: "1j9Cph2RqeHURiBENRFUAe53EUVakrPAg", h: "75px" },
+            { name: "KCL", id: "1AiX6DX6pxNdID0CpzS6ldcJHuWFHIpD6", h: "80px" },
+            { name: "Kelley", id: "1yrBkP5JdIruq3FcCe_fY3ifJ8wgBmIWQ", h: "70px" },
+            { name: "NTU Taiwan", id: "1taYfqGVmoHNrKj4CcrCC2l6o_5Ja6y54", h: "100px" }, // 顯著放大
+            { name: "Tsinghua", id: "1LLKAIAt2T7iDojbcCFtTEScDgWqmmNUP", h: "135px" }, // 圓形顯著放大
+            { name: "NUS", id: "1QSDDs6SyBofuhHRwAG90iHkswgY-Q2jJ", h: "75px" },
+            { name: "HEC Paris", id: "1KHdo0CETi275C4poc_UziKEYerQ6EWQc", h: "75px" },
+            { name: "ESSEC", id: "16YI6BRFrV1UmCcY6n02Q474OfI1Xqr7n", h: "115px" }, // 方形補償
+            { name: "Bocconi", id: "1mdQlMRSqNKF0qQO9_9BOdrk9PRD1qfqq", h: "140px" }, // 圓形顯著放大
+            { name: "HKU", id: "1SJGvkoULgLd0-0fCykEL55cZ9qslmLM6", h: "135px" }   // 圓形顯著放大
         ];
 
         const ScrollReveal = ({ children, delay = 0 }) => {
