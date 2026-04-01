@@ -12,12 +12,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400;1,700&display=swap');
-        
         :root {
             --brand-red: #ff3b3b;
-            --brand-dark-red: #820000;
             --brand-dark: #191c1e;
             --brand-light: #f7f9fc;
             --dip-blue: #1e455e;
@@ -29,18 +29,19 @@
             background-color: var(--brand-light); 
             overflow-x: hidden; 
             color: var(--brand-dark);
+            font-family: 'Inter', sans-serif;
         }
         
+        .font-spartan { font-family: 'League Spartan', sans-serif; }
         .font-inter { font-family: 'Inter', sans-serif; }
         .font-libre { font-family: 'Libre Caslon Text', serif; }
         
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Animation Classes */
         .reveal-up {
             opacity: 0;
-            transform: translateY(40px);
+            transform: translateY(30px);
             transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .reveal-up.active {
@@ -60,49 +61,49 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 6rem 1.5rem;
+            padding: 5rem 1.5rem;
             position: relative;
         }
 
-        /* Timeline Advanced Styles */
         .timeline-grid {
             display: grid;
             grid-template-columns: repeat(11, 1fr);
             position: relative;
-            height: 220px;
+            height: 200px;
         }
         .timeline-month-label {
+            font-family: 'League Spartan', sans-serif;
             font-size: 10px;
-            font-weight: 800;
+            font-weight: 700;
             text-align: center;
-            color: rgba(255,255,255,0.9);
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-            padding-bottom: 8px;
+            color: rgba(255,255,255,0.7);
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            padding-bottom: 10px;
             position: relative;
         }
         .timeline-month-label::after {
             content: '';
             position: absolute;
-            bottom: -4px;
+            bottom: -3px;
             left: 50%;
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             background: white;
             border-radius: 50%;
             transform: translateX(-50%);
         }
         .project-bar-v2 {
             position: absolute;
-            height: 22px;
-            border-radius: 2px;
+            height: 20px;
+            border-radius: 1px;
             display: flex;
             align-items: center;
             padding: 0 10px;
-            font-size: 9px;
-            font-weight: 900;
+            font-family: 'League Spartan', sans-serif;
+            font-size: 8px;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.02em;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            letter-spacing: 0.08em;
             white-space: nowrap;
         }
         .project-bar-ip { background: white; color: var(--dip-blue); }
@@ -116,31 +117,18 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 900;
-            letter-spacing: 0.5em;
+            font-family: 'League Spartan', sans-serif;
+            font-weight: 800;
+            letter-spacing: 0.3em;
             text-transform: uppercase;
-            font-size: 14px;
+            font-size: 11px;
         }
 
-        /* LOGO Wall Grid Customization */
-        .school-wall-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 2rem;
-            width: 100%;
-            max-width: 1200px;
-        }
-        @media (min-width: 768px) {
-            .school-wall-grid {
-                grid-template-columns: repeat(5, 1fr);
-                gap: 4rem;
-            }
-        }
         .logo-box {
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 140px;
+            height: 130px;
         }
 
         .sticky-hero-container {
@@ -156,32 +144,35 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        // --- Utils ---
+        // --- Utils: Animation Reveal (One-time trigger) ---
         const ScrollReveal = ({ children, delay = 0 }) => {
             const ref = useRef(null);
             const [isVisible, setIsVisible] = useState(false);
             useEffect(() => {
                 const observer = new IntersectionObserver(([entry]) => {
-                    if (entry.isIntersecting) setTimeout(() => setIsVisible(true), delay);
-                }, { threshold: 0.4 }); // 高閾值，優化觀看體驗
+                    if (entry.isIntersecting) {
+                        setTimeout(() => setIsVisible(true), delay);
+                        observer.unobserve(entry.target);
+                    }
+                }, { threshold: 0.4 });
                 if (ref.current) observer.observe(ref.current);
                 return () => observer.disconnect();
             }, [delay]);
             return <div ref={ref} className={`reveal-up ${isVisible ? 'active' : ''} w-full flex flex-col items-center`}>{children}</div>;
         };
 
-        // --- Data ---
+        // --- Data (Visual Compensation) ---
         const schoolsData = [
-            { name: "NTU Singapore", id: "1j9Cph2RqeHURiBENRFUAe53EUVakrPAg", h: "75px" },
-            { name: "KCL", id: "1AiX6DX6pxNdID0CpzS6ldcJHuWFHIpD6", h: "70px" },
-            { name: "Kelley", id: "1yrBkP5JdIruq3FcCe_fY3ifJ8wgBmIWQ", h: "60px" },
-            { name: "NTU Taiwan", id: "1taYfqGVmoHNrKj4CcrCC2l6o_5Ja6y54", h: "105px" }, 
-            { name: "Tsinghua", id: "1LLKAIAt2T7iDojbcCFtTEScDgWqmmNUP", h: "135px" }, 
-            { name: "NUS", id: "1QSDDs6SyBofuhHRwAG90iHkswgY-Q2jJ", h: "75px" },
-            { name: "HEC Paris", id: "1KHdo0CETi275C4poc_UziKEYerQ6EWQc", h: "75px" },
-            { name: "ESSEC", id: "16YI6BRFrV1UmCcY6n02Q474OfI1Xqr7n", h: "120px" }, 
-            { name: "Bocconi", id: "1mdQlMRSqNKF0qQO9_9BOdrk9PRD1qfqq", h: "140px" }, 
-            { name: "HKU", id: "1XsL9Hn_ihVU3SpIpwLDRkHn503usia5h", h: "135px" }   
+            { id: "1j9Cph2RqeHURiBENRFUAe53EUVakrPAg", h: "75px" },
+            { id: "1AiX6DX6pxNdID0CpzS6ldcJHuWFHIpD6", h: "70px" },
+            { id: "1yrBkP5JdIruq3FcCe_fY3ifJ8wgBmIWQ", h: "60px" },
+            { id: "1taYfqGVmoHNrKj4CcrCC2l6o_5Ja6y54", h: "95px" }, 
+            { id: "1LLKAIAt2T7iDojbcCFtTEScDgWqmmNUP", h: "125px" }, 
+            { id: "1QSDDs6SyBofuhHRwAG90iHkswgY-Q2jJ", h: "75px" },
+            { id: "1KHdo0CETi275C4poc_UziKEYerQ6EWQc", h: "75px" },
+            { id: "16YI6BRFrV1UmCcY6n02Q474OfI1Xqr7n", h: "115px" }, 
+            { id: "1mdQlMRSqNKF0qQO9_9BOdrk9PRD1qfqq", h: "140px" }, 
+            { id: "1SJGvkoULgLd0-0fCykEL55cZ9qslmLM6", h: "125px" }   
         ];
 
         const timelineData = [
@@ -192,9 +183,222 @@
             { label: "GP 2: M&A", type: "gp", start: 4.5, end: 9.2, row: 3 }
         ];
 
-        // --- Main App ---
+        // --- View Components ---
+
+        const HomeView = ({ scrollY, windowHeight }) => {
+            const progress = Math.min(1, scrollY / windowHeight);
+            const logoScale = 1 - (progress * 0.82); 
+            const logoY = -(progress * 14);
+
+            return (
+                <div className="w-full">
+                    <div className="sticky-hero-container">
+                        <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
+                            <div className="sticky top-0 h-screen w-full bg-[#0a0a0a]">
+                                <div className="absolute inset-0 bg-cover bg-center opacity-60" style={{ backgroundImage: "url('https://drive.google.com/thumbnail?id=1bF-GwJQpgupCHzX2cNal9KAYgDdvsea1&sz=w3000')" }} />
+                                <div className="absolute inset-0 bg-black/50" />
+                            </div>
+                        </div>
+                        <div className="absolute inset-0 w-full h-full pointer-events-none z-20">
+                            <div className="sticky top-0 h-screen w-full flex items-center justify-center">
+                                <img src="https://drive.google.com/thumbnail?id=1_AfeQO-hhZyAh-KkzHYYLpkA7FmGbA9z&sz=w2000" alt="JAMS" style={{ transform: `translateY(${logoY}vh) scale(${logoScale})`, transition: 'transform 0.1s ease-out' }} className="w-[70%] md:w-[40%] lg:w-[26%] max-w-[420px] object-contain drop-shadow-[0_0_40px_rgba(255,255,255,0.12)]" />
+                            </div>
+                        </div>
+                        <div className="relative z-30">
+                            <section className="h-screen bg-transparent"></section>
+                            <section className="h-screen flex flex-col items-center justify-center px-6 bg-transparent">
+                                <div className="font-inter text-sm md:text-base leading-relaxed font-light max-w-xl text-center text-white/80 drop-shadow-md translate-y-16 tracking-wide">
+                                    JAMS Investment is a small-but-elite, mentorship-driven finance talent platform. Through high-touch mentorship supported by solid technical training, we build stronger connections.
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const TeamsView = () => (
+            <div className="w-full">
+                <section className="relative w-full h-screen flex flex-col items-center justify-center bg-[#0a0a0a]">
+                    <div className="absolute inset-0 bg-cover bg-center opacity-40 bg-fixed" style={{ backgroundImage: "url('https://drive.google.com/thumbnail?id=1bF-GwJQpgupCHzX2cNal9KAYgDdvsea1&sz=w3000')" }} />
+                    <div className="absolute inset-0 bg-black/80 z-10" />
+                    <div className="relative z-20 text-center px-6 reveal-up active">
+                        <span className="font-spartan text-xs tracking-[0.5em] text-[#ff3b3b] uppercase mb-4 font-bold">The People</span>
+                        <h1 className="font-spartan font-bold text-4xl md:text-6xl uppercase text-white tracking-tighter leading-none">MEET THE <br/>TEAM</h1>
+                        <p className="mt-12 font-inter text-xs md:text-sm font-light text-white/40 uppercase tracking-[0.4em]">Structure coming soon...</p>
+                    </div>
+                </section>
+            </div>
+        );
+
+        const DipView = ({ scrollY, windowHeight }) => {
+            const dipProgress = Math.min(1, scrollY / windowHeight);
+            const dipLogoScale = 1 - (dipProgress * 0.82); 
+            const dipLogoY = -(dipProgress * 14);
+            const months = ["2026/3", "2026/4", "2026/5", "2026/6", "2026/7", "2026/8", "2026/9", "2026/10", "2026/11", "2026/12", "2027/1"];
+
+            return (
+                <div className="w-full">
+                    {/* Card 1: HEROCUT (DIP) */}
+                    <div className="sticky-hero-container">
+                        <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
+                            <div className="sticky top-0 h-screen w-full bg-[#0a0a0a]"></div>
+                        </div>
+                        <div className="absolute inset-0 w-full h-full pointer-events-none z-20">
+                            <div className="sticky top-0 h-screen w-full flex items-center justify-center px-4">
+                                <img src="https://drive.google.com/thumbnail?id=1WOS-DsLJesu97SGWafm-W_SVH46RNaLq&sz=w3000" alt="DIP" style={{ transform: `translateY(${dipLogoY}vh) scale(${dipLogoScale})`, transition: 'transform 0.1s ease-out' }} className="w-[85%] md:w-[60%] lg:w-[38%] max-w-[800px] object-contain drop-shadow-[0_0_50px_rgba(255,255,255,0.1)]" />
+                            </div>
+                        </div>
+                        <div className="relative z-30">
+                            <section className="h-screen bg-transparent"></section>
+                            <section className="h-screen flex flex-col items-center justify-center px-6 bg-transparent">
+                                <div className="font-inter text-xs md:text-sm leading-relaxed font-light max-w-lg text-justify text-white/80 drop-shadow-md translate-y-16 tracking-wide">
+                                    JAMS Direct Industry Program (DIP) is an exclusive, high-density training platform designed to bridge the gap between top Asian talent and global financial hubs. Through rigorous technical training and high-touch mentorship, we build a direct pipeline to the world's leading firms.
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+
+                    {/* Card 2: Cohort Selection Results (Balanced Spartan) */}
+                    <section className="card-section bg-[#f7f9fc] z-40 relative border-b border-black/5">
+                        <ScrollReveal>
+                            <div className="px-5 py-2 border-2 border-[#191c1e] font-spartan text-[10px] font-bold tracking-[0.4em] uppercase mb-14">Cohort Selection Results</div>
+                            <p className="font-inter text-xs text-black/50 leading-relaxed max-w-xl text-center italic mb-20 uppercase tracking-widest px-6">"we received applications from a highly competitive pool of outstanding candidates worldwide. through a rigorous and selective review process."</p>
+                        </ScrollReveal>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 w-full max-w-5xl gap-10 divide-y md:divide-y-0 md:divide-x divide-black/10 mb-28 px-6">
+                            {[{v:"15", l:"FINAL ADMITS"},{v:"9%", l:"ACCEPTANCE RATE"},{v:"165", l:"APPLICATIONS RECEIVED"}].map((s, i) => (
+                                <ScrollReveal key={i} delay={i * 150}>
+                                    <div className="flex flex-col items-center py-6 md:py-0 text-center">
+                                        <span className="font-spartan font-bold text-4xl lg:text-6xl text-[#191c1e] tracking-tighter mb-1">{s.v}</span>
+                                        <span className="font-spartan font-semibold text-[9px] tracking-[0.4em] text-black/40 uppercase">{s.l}</span>
+                                    </div>
+                                </ScrollReveal>
+                            ))}
+                        </div>
+
+                        <div className="w-full flex flex-col items-center max-w-6xl">
+                            <ScrollReveal delay={400}>
+                                <span className="font-spartan text-[9px] tracking-[0.6em] font-bold text-[#820000] uppercase mb-4">Selections Worldwide</span>
+                                <p className="text-[7px] text-black/30 font-bold uppercase tracking-[0.4em] mb-16 px-6 text-center">(Taiwan / Hong Kong / Singapore / France / UK / Italy / USA / Indonesia)</p>
+                            </ScrollReveal>
+                            <div className="grid grid-cols-2 md:grid-cols-5 gap-x-12 gap-y-10 lg:gap-x-16 lg:gap-y-12 px-8">
+                                {schoolsData.map((s, i) => (
+                                    <ScrollReveal key={i} delay={i * 80}>
+                                        <div className="logo-box"><img src={`https://drive.google.com/thumbnail?id=${s.id}&sz=w1000`} alt="School" style={{ height: s.h }} className="object-contain max-w-full" /></div>
+                                    </ScrollReveal>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Card 3: Program Overview (Refined Scale) */}
+                    <section className="card-section bg-[#1e455e] text-white z-40 relative px-6">
+                        <div className="absolute inset-0 bg-cover bg-center opacity-10 pointer-events-none" style={{ backgroundImage: "url('https://drive.google.com/thumbnail?id=1bF-GwJQpgupCHzX2cNal9KAYgDdvsea1&sz=w3000')" }} />
+                        <ScrollReveal><h2 className="font-spartan font-bold text-3xl md:text-5xl uppercase tracking-tighter mb-20 text-center leading-none uppercase">PROGRAM <br/> OVERVIEW</h2></ScrollReveal>
+                        <div className="grid grid-cols-1 md:grid-cols-3 w-full max-w-6xl border border-white/10 bg-white/5 backdrop-blur-lg">
+                            {[
+                                { title: "Guest Speaker", items: ["Industry Insights", "Investment Banking", "Private Equity", "Project Financing"] },
+                                { title: "Mentorship", items: ["Career Training & Coaching", "Interview Preparation", "Resume Workshop", "Private Alumni Network"] },
+                                { title: "Technical Training", items: ["Deal Analysis & Underwriting Fundamentals", "Discounted Cash Flow Modeling", "Accretion/Dilution Modeling", "Leveraged Buyout Modeling and more..."] }
+                            ].map((col, i) => (
+                                <div key={i} className={`flex flex-col p-10 lg:p-14 ${i !== 2 ? 'md:border-r border-white/10' : ''}`}>
+                                    <h3 className="font-spartan font-bold text-xs mb-10 border-b border-white/5 pb-4 text-center tracking-[0.3em] uppercase">{col.title}</h3>
+                                    <ul className="space-y-6 flex-1 flex flex-col justify-center items-center text-center">
+                                        {col.items.map((item, j) => (
+                                            <li key={j} className={`font-inter text-[11px] ${j === 0 ? 'font-bold opacity-100' : 'opacity-50'} tracking-widest leading-relaxed uppercase`}>{item}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* Card 4: Education Planning */}
+                    <section className="card-section bg-[#1e455e] overflow-hidden pt-0 pb-32 z-40 relative px-6">
+                        <div className="max-w-6xl mx-auto relative z-10 text-white w-full">
+                            <ScrollReveal><h2 className="font-spartan font-bold text-3xl md:text-5xl uppercase tracking-tighter mb-4 text-center leading-none uppercase">EDUCATION <br/> PLANNING</h2></ScrollReveal>
+                            <div className="mb-20 overflow-x-auto no-scrollbar pb-8 mt-14 text-center">
+                                <div className="min-w-[1000px]">
+                                    <div className="flex justify-center gap-10 mb-12 text-[9px] font-spartan font-bold tracking-[0.5em] uppercase">
+                                        <div className="flex items-center gap-3"><div className="w-2.5 h-2.5 bg-white"></div> Individual Project</div>
+                                        <div className="flex items-center gap-3"><div className="w-2.5 h-2.5 bg-[#ff3b3b]"></div> Group Project</div>
+                                    </div>
+                                    <div className="timeline-grid">
+                                        {months.map((m, i) => ( <div key={i} className="timeline-month-label">{m}</div> ))}
+                                        {timelineData.map((p, i) => ( <div key={i} className={`project-bar-v2 ${p.type === 'ip' ? 'project-bar-ip' : 'project-bar-gp'}`} style={{ left: `calc(${(p.start / 10) * 100}%)`, width: `calc(${( (p.end - p.start) / 10) * 100}%)`, top: `${60 + (p.row * 35)}px` }}>{p.label}</div> ))}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="bg-white rounded-sm shadow-2xl overflow-hidden text-[#1e455e] flex flex-col md:flex-row max-w-5xl mx-auto">
+                                <div className="topics-sidebar p-6 md:w-16">TOPICS</div>
+                                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 divide-x divide-black/5">
+                                    <div className="divide-y divide-black/5">
+                                        {["Modeling Fundamentals", "3FS Projection", "Advanced Accounting", "Enterprise Value & Equity Value", "WACC & DCF", "Trading Comparables", "ECM / DCM Basics & Modeling", "Project Finance Modeling", "Accretion/DILUTION Analysis", "M&A Modeling", "LBO Modeling"].map((t, i) => (
+                                            <div key={i} className="p-3.5 text-[10px] font-spartan font-bold uppercase tracking-widest hover:bg-slate-50 transition-colors flex items-center justify-between group">
+                                                <span>{t}</span><span className="text-[#ff3b3b] opacity-0 group-hover:opacity-100 transition-opacity">◈</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="bg-slate-50 flex flex-col divide-y divide-black/5 font-inter">
+                                        <div className="p-10 flex-1 flex flex-col justify-center items-center text-center"><div className="text-[8px] font-spartan font-bold opacity-30 uppercase mb-2 tracking-[0.4em]">Scope A</div><div className="text-xs font-bold uppercase tracking-widest leading-relaxed">Individual Project 1: <br/>Equity Research</div></div>
+                                        <div className="p-10 flex-1 flex flex-col justify-center items-center text-center"><div className="text-[8px] font-spartan font-bold opacity-30 uppercase mb-2 tracking-[0.4em]">Scope B</div><div className="text-xs font-bold uppercase tracking-widest leading-relaxed">Individual Project 2: ECM / DCM <br/>Project Finance</div></div>
+                                        <div className="p-10 flex-1 flex flex-col justify-center items-center text-center bg-white"><div className="text-[8px] font-spartan font-bold text-[#ff3b3b] uppercase mb-2 italic tracking-[0.4em]">Scope C - Capstone</div><div className="text-xs font-bold uppercase tracking-widest leading-relaxed text-[#191c1e]">Group Project 1: LBO PJ <br/>LBO Modeling</div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Card 5: Mentor Intro */}
+                    <section className="card-section bg-[#f7f9fc] py-24 z-40 relative px-6">
+                        <ScrollReveal><h2 className="font-spartan font-bold text-4xl md:text-6xl uppercase tracking-tighter mb-4 text-center leading-none uppercase">MENTOR <br/> INTRO</h2></ScrollReveal>
+                        <div className="max-w-6xl w-full flex flex-col items-center mt-10">
+                            <p className="font-inter text-xs text-black/60 leading-relaxed max-w-xl text-justify mb-20 italic tracking-wide">"mentors bring clarity, perspective, and real industry value..."</p>
+                            
+                            <div className="bg-white p-10 border border-black/5 rounded-sm w-full mb-20 shadow-sm text-center max-w-5xl mx-auto">
+                                <p className="font-spartan text-[10px] font-bold tracking-[0.5em] text-black/20 uppercase mb-10 text-center">Mentors Background (Taipei | Singapore | USA)</p>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-12 opacity-30 grayscale items-center px-4">
+                                    {["BNP PARIBAS", "CITIBANK", "TEMASEK", "DBS", "HDRE", "HAITONG", "KHL", "HKIB"].map((l, i) => ( <div key={i} className="flex items-center justify-center p-2 text-[9px] font-spartan font-bold tracking-tighter text-center uppercase border border-black/5 h-16">{l}</div> ))}
+                                </div>
+                            </div>
+
+                            <div className="w-full mb-28 max-w-5xl mx-auto">
+                                <p className="text-center font-spartan text-[10px] font-bold tracking-[0.6em] text-[#820000] uppercase mb-10">Industry Expertise</p>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-0 border border-black/5 bg-white shadow-sm overflow-hidden">
+                                    {["Project Finance", "Private Equity", "Investment Banking", "Sales & Trading", "Private Banking", "Corporate Banking"].map((ind, i) => (
+                                        <div key={i} className="p-12 flex items-center justify-center font-spartan font-bold text-sm lg:text-base text-black/70 border-r border-b border-black/5 uppercase tracking-tighter text-center hover:bg-slate-50 transition-all">{ind}</div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Card 6: Guest Speaker Intro */}
+                    <section className="card-section bg-[#1e455e] text-white py-24 z-40 relative px-6">
+                        <ScrollReveal><h2 className="font-spartan font-bold text-4xl md:text-6xl uppercase tracking-tighter mb-4 text-center leading-none uppercase">GUEST <br/> SPEAKER</h2></ScrollReveal>
+                        <div className="max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 gap-0 border border-white/5 shadow-2xl rounded-sm overflow-hidden mt-14 mx-auto">
+                            <div className="bg-white p-12 md:p-16 flex flex-col items-center text-center">
+                                <p className="font-spartan text-[10px] font-bold tracking-[0.4em] text-[#1e455e]/40 uppercase mb-16">Global Network</p>
+                                <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 w-full grayscale opacity-40 items-center px-4">
+                                    {["Arrowroot", "KHL", "Scotiabank", "NOMURA", "Citibank", "TGVEST", "J.P. Morgan", "ab VALUE", "NEFIN", "DBS", "HASI", "HSBC", "Blue Owl", "Orsted", "Jefferies", "Deloitte"].map((l, i) => ( <div key={i} className="flex items-center justify-center p-2 text-[9px] font-spartan font-bold text-black border border-black/5 uppercase text-center tracking-tighter h-12">{l}</div> ))}
+                                </div>
+                            </div>
+                            <div className="bg-[#1e455e] p-12 md:p-16 flex flex-col border-l border-white/5 divide-y divide-white/5">
+                                <p className="font-spartan text-[10px] font-bold tracking-[0.4em] text-white/30 uppercase mb-16 text-center">Program Topics</p>
+                                {["DEAL ADVISORY", "RENEWABLE ENERGY PROJECT FINANCE", "PRIVATE EQUITY IN MIAMI", "NYC BOUTIQUE INVESTMENT BANK", "TAIWAN GROWTH EQUITY", "EQUITY RESEARCH", "EUROPE INFRASTRUCTURE PE", "HONG KONG PRIVATE BANKING", "TAIWAN PRIVATE EQUITY", "FIXED INCOME & ASSET MGMT"].map((t, i) => (
+                                    <div key={i} className="py-5 font-spartan font-bold text-[10px] md:text-[11px] tracking-[0.2em] text-white/70 hover:text-[#ff3b3b] transition-colors cursor-default uppercase">{t}</div>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            );
+        };
+
+        // --- Controller ---
         const App = () => {
-            const [currentPage, setCurrentPage] = useState('home'); 
+            const [currentPage, setCurrentPage] = useState('dip'); 
             const [scrollY, setScrollY] = useState(0);
             const [windowHeight, setWindowHeight] = useState(800);
             const containerRef = useRef(null);
@@ -202,251 +406,46 @@
             useEffect(() => {
                 setWindowHeight(window.innerHeight);
                 const container = containerRef.current;
-                const handleScroll = () => setScrollY(container.scrollTop);
+                const handleScroll = () => { if (container) setScrollY(container.scrollTop); };
                 if (container) container.addEventListener('scroll', handleScroll);
                 return () => container && container.removeEventListener('scroll', handleScroll);
-            }, []);
+            }, [currentPage]);
 
-            // --- Home Content (恢復 HEROCUT 與 第一卡邏輯) ---
-            const HomeContent = () => {
-                const progress = Math.min(1, scrollY / windowHeight);
-                const logoScale = 1 - (progress * 0.82); 
-                const logoY = -(progress * 14);
-
-                return (
-                    <div className="w-full">
-                        <div className="sticky-hero-container">
-                            <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
-                                <div className="sticky top-0 h-screen w-full bg-[#0a0a0a]">
-                                    <div className="absolute inset-0 bg-cover bg-center opacity-80" style={{ backgroundImage: "url('https://drive.google.com/thumbnail?id=1bF-GwJQpgupCHzX2cNal9KAYgDdvsea1&sz=w3000')" }} />
-                                    <div className="absolute inset-0 bg-black/60" />
-                                </div>
-                            </div>
-                            <div className="absolute inset-0 w-full h-full pointer-events-none z-20">
-                                <div className="sticky top-0 h-screen w-full flex items-center justify-center">
-                                    <img 
-                                        src="https://drive.google.com/thumbnail?id=1_AfeQO-hhZyAh-KkzHYYLpkA7FmGbA9z&sz=w2000" 
-                                        alt="JAMS Logo" 
-                                        style={{ transform: `translateY(${logoY}vh) scale(${logoScale})`, transition: 'transform 0.1s ease-out' }}
-                                        className="w-[70%] md:w-[45%] lg:w-[30%] max-w-[500px] object-contain drop-shadow-[0_0_40px_rgba(255,255,255,0.15)]"
-                                    />
-                                </div>
-                            </div>
-                            <div className="relative z-30">
-                                <section className="h-screen bg-transparent"></section>
-                                <section className="h-screen flex flex-col items-center justify-center px-6 bg-transparent">
-                                    <div className="font-inter text-sm md:text-base leading-relaxed font-light max-w-2xl text-center text-white/90 drop-shadow-md translate-y-16">
-                                        JAMS Investment is a small-but-elite, mentorship-driven finance talent platform. Through high-touch mentorship supported by solid technical training, we build stronger, more direct industry connections and a long-term pipeline. Every member can grow with greater focus, depth, and efficiency within limited resources.
-                                    </div>
-                                </section>
-                            </div>
-                        </div>
-                        {/* 這裡可以接首頁的其他內容... */}
-                    </div>
-                );
-            };
-
-            // --- Teams Content ---
-            const TeamsContent = () => (
-                <div className="w-full">
-                    <section className="relative w-full h-screen flex flex-col items-center justify-center bg-[#0a0a0a]">
-                        <div className="absolute inset-0 bg-cover bg-center opacity-40 bg-fixed" style={{ backgroundImage: "url('https://drive.google.com/thumbnail?id=1bF-GwJQpgupCHzX2cNal9KAYgDdvsea1&sz=w3000')" }} />
-                        <div className="absolute inset-0 bg-black/60 z-10" />
-                        <div className="relative z-20 text-center px-6 reveal-up active">
-                            <span className="font-inter text-xs tracking-[0.5em] text-[#ff3b3b] uppercase mb-4 font-bold">The People</span>
-                            <h1 className="font-libre font-bold text-5xl md:text-7xl lg:text-[5rem] tracking-tighter uppercase leading-[1.1] text-white">MEET THE TEAM</h1>
-                            <p className="mt-8 font-inter text-sm text-white/40 uppercase tracking-widest leading-relaxed">Structure coming soon...</p>
-                        </div>
-                    </section>
-                </div>
-            );
-
-            // --- DIP Content (嚴格執行 6 卡順序) ---
-            const DipContent = () => {
-                const dipProgress = Math.min(1, scrollY / windowHeight);
-                const dipLogoScale = 1 - (dipProgress * 0.82); 
-                const dipLogoY = -(dipProgress * 14);
-
-                return (
-                    <div className="w-full">
-                        {/* Card 1: DIP Hero Zooming */}
-                        <div className="sticky-hero-container">
-                            <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
-                                <div className="sticky top-0 h-screen w-full bg-[#0a0a0a]"></div>
-                            </div>
-                            <div className="absolute inset-0 w-full h-full pointer-events-none z-20">
-                                <div className="sticky top-0 h-screen w-full flex items-center justify-center px-4">
-                                    <img 
-                                        src="https://drive.google.com/thumbnail?id=1WOS-DsLJesu97SGWafm-W_SVH46RNaLq&sz=w3000" 
-                                        alt="DIP Logo"
-                                        style={{ transform: `translateY(${dipLogoY}vh) scale(${dipLogoScale})`, transition: 'transform 0.1s ease-out' }}
-                                        className="w-[85%] md:w-[65%] lg:w-[45%] max-w-[1000px] object-contain drop-shadow-[0_0_60px_rgba(255,255,255,0.1)]"
-                                    />
-                                </div>
-                            </div>
-                            <div className="relative z-30">
-                                <section className="h-screen bg-transparent"></section>
-                                <section className="h-screen flex flex-col items-center justify-center px-6 bg-transparent">
-                                    <div className="font-inter text-sm md:text-base leading-relaxed font-light max-w-lg text-justify text-white/90 drop-shadow-md translate-y-16">
-                                        JAMS Direct Industry Program (DIP) is an exclusive, high-density training platform designed to bridge the gap between top Asian talent and global financial hubs. Through rigorous technical training and high-touch mentorship, we build a direct pipeline to the world's leading firms.
-                                    </div>
-                                </section>
-                            </div>
-                        </div>
-
-                        {/* Card 2: Cohort Selection Results (移除地圖) */}
-                        <section className="card-section bg-[#f7f9fc] z-40 relative border-b border-black/5">
-                            <ScrollReveal>
-                                <div className="px-6 py-2 border-2 border-[#191c1e] font-inter text-[11px] font-black tracking-[0.4em] uppercase mb-16">Cohort Selection Results</div>
-                                <p className="font-inter text-xs md:text-sm text-black/50 leading-relaxed max-w-2xl text-center italic mb-20 uppercase tracking-widest px-6">"we received applications from a highly competitive pool of outstanding candidates worldwide. through a rigorous and selective review process, we carefully chose this cohort of admits."</p>
-                            </ScrollReveal>
-
-                            <div className="grid grid-cols-1 md:grid-cols-3 w-full max-w-6xl gap-12 divide-y md:divide-y-0 md:divide-x divide-black/10 mb-32 px-6">
-                                {[{v:"15", l:"FINAL ADMITS"},{v:"9%", l:"ACCEPTANCE RATE"},{v:"165", l:"APPLICATIONS RECEIVED"}].map((s, i) => (
-                                    <ScrollReveal key={i} delay={i * 150}>
-                                        <div className="flex flex-col items-center py-8 md:py-0 text-center">
-                                            <span className="font-libre font-bold text-7xl text-[#191c1e] tracking-tighter mb-2">{s.v}</span>
-                                            <span className="font-inter font-bold text-[10px] tracking-widest text-black/40 uppercase">{s.l}</span>
-                                        </div>
-                                    </ScrollReveal>
-                                ))}
-                            </div>
-
-                            <div className="w-full flex flex-col items-center">
-                                <ScrollReveal delay={400}>
-                                    <span className="font-inter text-[9px] tracking-[0.4em] font-black text-[#820000] uppercase mb-4">Selections Worldwide</span>
-                                    <p className="text-[8px] text-black/30 font-bold uppercase tracking-widest mb-16 px-6 text-center">(Taiwan / Hong Kong / Singapore / France / UK / Italy / USA / Indonesia)</p>
-                                </ScrollReveal>
-                                <div className="school-wall-grid px-8">
-                                    {schoolsData.map((s, i) => (
-                                        <ScrollReveal key={i} delay={i * 80}>
-                                            <div className="logo-box">
-                                                <img src={`https://drive.google.com/thumbnail?id=${s.id}&sz=w1000`} alt={s.name} style={{ height: s.h }} className="object-contain max-w-full" />
-                                            </div>
-                                        </ScrollReveal>
-                                    ))}
-                                </div>
-                            </div>
-                        </section>
-
-                        {/* Card 3: Program Overview */}
-                        <section className="card-section bg-[#1e455e] text-white z-40 relative px-6">
-                            <div className="absolute inset-0 bg-cover bg-center opacity-5 pointer-events-none" style={{ backgroundImage: "url('https://drive.google.com/thumbnail?id=1bF-GwJQpgupCHzX2cNal9KAYgDdvsea1&sz=w3000')" }} />
-                            <ScrollReveal><h2 className="font-libre text-4xl md:text-5xl uppercase tracking-tighter mb-20 text-center">Program Overview</h2></ScrollReveal>
-                            <div className="grid grid-cols-1 md:grid-cols-3 w-full max-w-6xl border border-white/10 bg-white/5 backdrop-blur-md">
-                                {[
-                                    { title: "Guest Speaker", items: ["Industry Insights", "Investment Banking", "Private Equity", "Project Financing"] },
-                                    { title: "Mentorship", items: ["Career Training & Coaching", "Interview Preparation", "Resume Workshop", "Private Alumni Network"] },
-                                    { title: "Technical Training", items: ["Deal Analysis & Underwriting Fundamentals", "Discounted Cash Flow Modeling", "Accretion/Dilution Modeling", "Leveraged Buyout Modeling and more..."] }
-                                ].map((col, i) => (
-                                    <div key={i} className={`flex flex-col p-10 ${i !== 2 ? 'md:border-r border-white/10' : ''}`}>
-                                        <h3 className="font-libre text-lg font-bold mb-10 border-b border-white/5 pb-4 text-center tracking-widest uppercase">{col.title}</h3>
-                                        <ul className="space-y-6 flex-1 flex flex-col justify-center items-center text-center">
-                                            {col.items.map((item, j) => (
-                                                <li key={j} className={`font-inter text-xs ${j === 0 ? 'font-black opacity-100' : 'opacity-50'} tracking-wide leading-relaxed`}>{item}</li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                ))}
-                            </div>
-                        </section>
-
-                        {/* Card 4: Education Planning */}
-                        <section className="card-section bg-[#1e455e] overflow-hidden pt-0 pb-32 z-40 relative px-6">
-                            <div className="max-w-6xl mx-auto relative z-10 text-white w-full">
-                                <ScrollReveal><h2 className="font-libre text-4xl md:text-5xl uppercase tracking-tighter mb-2 text-center">Education Planning</h2></ScrollReveal>
-                                <div className="mb-24 overflow-x-auto no-scrollbar pb-8 mt-12">
-                                    <div className="min-w-[1000px]">
-                                        <div className="flex justify-center gap-10 mb-12 text-[9px] font-black tracking-[0.2em] uppercase">
-                                            <div className="flex items-center gap-2"><div className="w-2.5 h-2.5 bg-white"></div> Individual Project</div>
-                                            <div className="flex items-center gap-2"><div className="w-2.5 h-2.5 bg-[#ff3b3b]"></div> Group Project</div>
-                                        </div>
-                                        <div className="timeline-grid">
-                                            {["2026/3", "2026/4", "2026/5", "2026/6", "2026/7", "2026/8", "2026/9", "2026/10", "2026/11", "2026/12", "2027/1"].map((m, i) => (
-                                                <div key={i} className="timeline-month-label">{m}</div>
-                                            ))}
-                                            {timelineData.map((p, i) => (
-                                                <div key={i} className={`project-bar-v2 ${p.type === 'ip' ? 'project-bar-ip' : 'project-bar-gp'}`} style={{ left: `calc(${(p.start / 10) * 100}%)`, width: `calc(${( (p.end - p.start) / 10) * 100}%)`, top: `${60 + (p.row * 35)}px` }}>{p.label}</div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="bg-white rounded-sm shadow-2xl overflow-hidden text-[#1e455e] flex flex-col md:flex-row">
-                                    <div className="topics-sidebar p-4 md:w-14">TOPICS</div>
-                                    <div className="flex-1 grid grid-cols-1 md:grid-cols-2 divide-x divide-black/5">
-                                        <div className="divide-y divide-black/5">
-                                            {["Modeling Fundamentals", "3FS Projection", "Advanced Accounting", "Enterprise Value & Equity Value", "WACC & DCF", "Trading Comparables", "ECM / DCM Basics & Modeling", "Project Finance Modeling", "Accretion/DILUTION Analysis", "M&A Modeling", "LBO Modeling"].map((t, i) => (
-                                                <div key={i} className="p-3 text-[11px] font-bold uppercase tracking-wide hover:bg-slate-50 transition-colors flex items-center justify-between group">
-                                                    <span>{t}</span><span className="text-[#ff3b3b] opacity-0 group-hover:opacity-100 transition-opacity">◈</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                        <div className="bg-slate-50 flex flex-col divide-y divide-black/5 font-inter">
-                                            <div className="p-10 flex-1 flex flex-col justify-center items-center text-center"><div className="text-[9px] font-black opacity-30 uppercase mb-2">Scope A</div><div className="text-xs font-extrabold uppercase tracking-widest leading-relaxed">Individual Project 1: <br/>Equity Research</div></div>
-                                            <div className="p-10 flex-1 flex flex-col justify-center items-center text-center"><div className="text-[9px] font-black opacity-30 uppercase mb-2">Scope B</div><div className="text-xs font-extrabold uppercase tracking-widest leading-relaxed">Individual Project 2: ECM / DCM <br/>Individual Project 3: Project Finance</div></div>
-                                            <div className="p-10 flex-1 flex flex-col justify-center items-center text-center bg-white"><div className="text-[9px] font-black text-[#ff3b3b] uppercase mb-2 italic">Scope C - Capstone</div><div className="text-xs font-extrabold uppercase tracking-widest leading-relaxed">Group Project 1: LBO PJ <br/>Individual Project 2: LBO Modeling</div></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-
-                        {/* Card 5: Mentor Intro */}
-                        <section className="card-section bg-[#f7f9fc] py-32 z-40 relative px-6">
-                            <ScrollReveal><h2 className="font-libre text-5xl md:text-6xl uppercase tracking-tighter mb-4 text-center">Mentor Intro</h2></ScrollReveal>
-                            <div className="max-w-6xl w-full flex flex-col items-center mt-12">
-                                <div className="bg-white p-12 border border-black/5 rounded-sm w-full mb-20 shadow-sm text-center">
-                                    <p className="font-inter text-[10px] font-black tracking-[0.3em] text-black/20 uppercase mb-10">Mentors Background (Taipei | Singapore | USA)</p>
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-12 opacity-30 grayscale items-center">{["BNP PARIBAS", "CITIBANK", "TEMASEK", "DBS", "HDRE", "HAITONG", "KHL", "HKIB"].map((l, i) => ( <div key={i} className="flex items-center justify-center p-2 text-[10px] font-black tracking-tighter text-center uppercase border border-black/5 h-16">{l}</div> ))}</div>
-                                </div>
-                                <div className="w-full mb-24"><p className="text-center font-inter text-[10px] font-black tracking-[0.5em] text-[#820000] uppercase mb-12">Industry</p><div className="grid grid-cols-2 md:grid-cols-3 gap-0 border border-black/5 bg-white shadow-sm">{["Project Finance", "Private Equity", "Investment Banking", "Sales & Trading", "Private Banking", "Corporate Banking"].map((ind, i) => ( <div key={i} className="p-12 flex items-center justify-center font-libre font-bold text-lg text-black/70 border-r border-b border-black/5 uppercase tracking-tighter text-center">{ind}</div> ))}</div></div>
-                                <div className="w-full bg-[#1e455e] text-white p-16 md:p-24 relative overflow-hidden shadow-2xl rounded-sm">
-                                    <div className="absolute inset-0 bg-cover bg-center opacity-10 pointer-events-none" style={{ backgroundImage: "url('https://drive.google.com/thumbnail?id=1bF-GwJQpgupCHzX2cNal9KAYgDdvsea1&sz=w3000')" }} />
-                                    <h3 className="font-libre text-2xl uppercase mb-12 border-b border-white/20 pb-6 tracking-widest text-center uppercase">What Mentors Bring To JAMS</h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16">{[{ t: "Career Guidance", d: "Structured advice on navigating early-stage finance careers across different verticals within the industry." },{ t: "Industry Insights", d: "First-hand sharing of real transaction experience, deal execution, and sector-specific dynamics." },{ t: "Vertical Expertise", d: "Deep dives into distinct finance tracks including Private Equity and Investment Banking." },{ t: "Recruitment Strategy", d: "Resume refinement, interview preparation, and competitive market positioning insights." },{ t: "Network Development", d: "Meaningful engagement with industry leaders, fostering long-term professional relationships." }].map((v, i) => ( <div key={i} className="flex flex-col items-center md:items-start text-center md:text-left"><h4 className="font-inter font-black text-sm uppercase mb-4 text-[#ff3b3b] tracking-widest">{v.t}</h4><p className="font-inter text-xs font-light opacity-60 leading-relaxed max-w-sm">{v.d}</p></div> ))}</div>
-                                </div>
-                            </div>
-                        </section>
-
-                        {/* Card 6: Guest Speaker Intro */}
-                        <section className="card-section bg-[#1e455e] text-white py-32 z-40 relative px-6">
-                            <ScrollReveal><h2 className="font-libre text-5xl md:text-7xl uppercase tracking-tighter mb-4 text-center">Guest Speaker</h2></ScrollReveal>
-                            <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-0 border border-white/5 shadow-2xl rounded-sm overflow-hidden mt-12">
-                                <div className="bg-white p-12 md:p-20 flex flex-col items-center text-center">
-                                    <p className="font-inter text-[10px] font-black tracking-[0.3em] text-[#1e455e]/40 uppercase mb-16">Global Network</p>
-                                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-10 w-full grayscale opacity-40 items-center">{["Arrowroot", "KHL", "Scotiabank", "NOMURA", "Citibank", "TGVEST", "J.P. Morgan", "ab VALUE", "NEFIN", "DBS", "HASI", "HSBC", "Blue Owl", "Orsted", "Jefferies", "Deloitte"].map((l, i) => ( <div key={i} className="flex items-center justify-center p-2 text-[10px] font-black text-black border border-black/5 uppercase text-center tracking-tighter h-12">{l}</div> ))}</div>
-                                </div>
-                                <div className="bg-[#1e455e] p-12 md:p-20 flex flex-col border-l border-white/5 divide-y divide-white/5">
-                                    <p className="font-inter text-[10px] font-black tracking-[0.3em] text-white/30 uppercase mb-16 text-center">Program Topics</p>
-                                    {["DEAL ADVISORY", "RENEWABLE ENERGY PROJECT FINANCE", "PRIVATE EQUITY IN MIAMI", "NYC BOUTIQUE INVESTMENT BANK", "TAIWAN GROWTH EQUITY", "EQUITY RESEARCH", "EUROPE INFRASTRUCTURE PE", "HONG KONG PRIVATE BANKING", "TAIWAN PRIVATE EQUITY", "FIXED INCOME & ASSET MGMT"].map((t, i) => ( <div key={i} className="py-6 font-inter font-bold text-xs tracking-[0.2em] text-white/80 hover:text-[#ff3b3b] transition-colors cursor-default">{t}</div> ))}
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-                );
+            const navigate = (page) => {
+                setCurrentPage(page);
+                if (containerRef.current) containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
             };
 
             return (
                 <div ref={containerRef} className="snap-container no-scrollbar relative bg-[#0a0a0a]">
-                    <nav className={`fixed top-0 left-0 z-50 w-full flex items-center justify-between px-6 md:px-12 py-8 text-white transition-all duration-700 ${scrollY > 100 ? 'bg-black/80 backdrop-blur-md py-5 shadow-lg' : 'bg-transparent'}`}>
-                        <button onClick={() => setCurrentPage('home')} className="font-libre font-bold text-xl uppercase tracking-tighter hover:text-[#ff3b3b] transition-colors">JAMS INVESTMENT</button>
-                        <div className="flex gap-10 font-inter text-[10px] font-bold tracking-[0.2em] uppercase">
-                            <button onClick={() => setCurrentPage('home')} className={`transition-colors ${currentPage === 'home' ? 'text-[#ff3b3b]' : 'hover:text-[#ff3b3b]'}`}>ABOUT</button>
-                            <button onClick={() => setCurrentPage('teams')} className={`transition-colors ${currentPage === 'teams' ? 'text-[#ff3b3b]' : 'hover:text-[#ff3b3b]'}`}>TEAMS</button>
-                            <button onClick={() => setCurrentPage('dip')} className={`transition-colors ${currentPage === 'dip' ? 'text-[#ff3b3b]' : 'hover:text-[#ff3b3b]'}`}>DIP</button>
+                    {/* Navigation Refined */}
+                    <nav className={`fixed top-0 left-0 z-50 w-full flex items-center justify-between px-6 md:px-12 py-7 transition-all duration-700 ${scrollY > 100 ? 'bg-black/90 backdrop-blur-xl py-4 shadow-2xl' : 'bg-transparent text-white'}`}>
+                        <button onClick={() => navigate('home')} className="font-libre font-bold text-xl lg:text-2xl uppercase tracking-tighter hover:text-[#ff3b3b] transition-all duration-300">
+                            JAMS INVESTMENT
+                        </button>
+                        <div className="flex gap-10 font-inter text-[11px] font-bold tracking-[0.3em] uppercase">
+                            <button onClick={() => navigate('home')} className={`transition-all duration-500 relative pb-1 ${currentPage === 'home' ? 'text-[#ff3b3b]' : 'hover:text-[#ff3b3b]'}`}>
+                                ABOUT {currentPage === 'home' && <div className="absolute -bottom-1 left-0 w-full h-[2px] bg-[#ff3b3b]"></div>}
+                            </button>
+                            <button onClick={() => navigate('teams')} className={`transition-all duration-500 relative pb-1 ${currentPage === 'teams' ? 'text-[#ff3b3b]' : 'hover:text-[#ff3b3b]'}`}>
+                                TEAMS {currentPage === 'teams' && <div className="absolute -bottom-1 left-0 w-full h-[2px] bg-[#ff3b3b]"></div>}
+                            </button>
+                            <button onClick={() => navigate('dip')} className={`transition-all duration-500 relative pb-1 ${currentPage === 'dip' ? 'text-[#ff3b3b]' : 'hover:text-[#ff3b3b]'}`}>
+                                DIP {currentPage === 'dip' && <div className="absolute -bottom-1 left-0 w-full h-[2px] bg-[#ff3b3b]"></div>}
+                            </button>
                         </div>
                     </nav>
 
-                    {currentPage === 'home' && <HomeContent />}
-                    {currentPage === 'teams' && <TeamsContent />}
-                    {currentPage === 'dip' && <DipContent />}
+                    {currentPage === 'home' && <HomeView scrollY={scrollY} windowHeight={windowHeight} />}
+                    {currentPage === 'teams' && <TeamsView />}
+                    {currentPage === 'dip' && <DipView scrollY={scrollY} windowHeight={windowHeight} />}
 
-                    <footer className="bg-[#0a0a0a] text-white px-8 md:px-12 py-20 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8 relative z-50">
+                    <footer className="bg-[#0a0a0a] text-white px-8 md:px-12 py-16 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8 relative z-50">
                         <div className="flex flex-col items-center md:items-start">
                             <span className="font-libre font-bold text-2xl uppercase tracking-tighter mb-2">JAMS INVESTMENT</span>
-                            <span className="font-inter text-[9px] tracking-[0.3em] font-bold opacity-30 uppercase">Asia's Elite Finance Pipeline</span>
+                            <span className="font-spartan text-[10px] tracking-[0.5em] font-bold opacity-30 uppercase">Elite Society of Finance</span>
                         </div>
-                        <span className="font-inter text-[9px] tracking-[0.2em] font-bold opacity-30 uppercase">© 2026 JAMS INVESTMENT. All Rights Reserved.</span>
+                        <span className="font-spartan text-[9px] tracking-[0.2em] font-bold opacity-30 uppercase">© 2026 JAMS INVESTMENT. All Rights Reserved.</span>
                     </footer>
                 </div>
             );
