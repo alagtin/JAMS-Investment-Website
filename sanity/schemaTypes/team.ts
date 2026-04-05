@@ -1,4 +1,3 @@
-// sanity/schemaTypes/team.ts
 export const team = {
   name: 'team',
   title: '團隊成員',
@@ -20,12 +19,11 @@ export const team = {
       type: 'image',
       options: { hotspot: true },
     },
-    // --- 新增這個排序欄位 ---
     {
       name: 'order',
-      title: '排序權重 (越小越靠前)',
+      title: '排序權重 (填 1 代表最前面，越小越靠前)',
       type: 'number',
-      initialValue: 100, // 預設值
+      initialValue: 100,
     },
   ],
 }
