@@ -1,4 +1,4 @@
-export const team = {
+export default {
   name: 'team',
   title: '團隊成員',
   type: 'document',
