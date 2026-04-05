@@ -1,11 +1,12 @@
-export default {
+// sanity/schemaTypes/team.ts
+export const team = {
   name: 'team',
-  title: '團隊成員管理',
+  title: '團隊成員',
   type: 'document',
   fields: [
     {
       name: 'name',
-      title: '成員姓名',
+      title: '姓名',
       type: 'string',
     },
     {
@@ -17,25 +18,14 @@ export default {
       name: 'image',
       title: '照片',
       type: 'image',
-      options: { hotspot: true }, // 讓你在後台可以直接裁切臉部中心
+      options: { hotspot: true },
     },
+    // --- 新增這個排序欄位 ---
     {
-      name: 'education',
-      title: '就讀/畢業學校',
-      type: 'array',
-      of: [{ type: 'string' }],
-      validation: (Rule) => Rule.min(1).max(2).error('請填寫至少一個、最多兩個學校'),
-    },
-    {
-      name: 'linkedin',
-      title: 'LinkedIn 連結',
-      type: 'url',
-    },
-    {
-      name: 'bio',
-      title: '短自我介紹',
-      type: 'text',
-      rows: 3,
+      name: 'order',
+      title: '排序權重 (越小越靠前)',
+      type: 'number',
+      initialValue: 100, // 預設值
     },
   ],
 }
