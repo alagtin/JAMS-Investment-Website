@@ -37,11 +37,10 @@ const globalLayoutData = {
 export default function RootLayout({ children }) {
   const [scrolled, setScrolled] = useState(false);
 
-  // 監聽滾動事件，切換導航欄狀態
+  // 監聽滾動事件，當下滑超過 80px 時切換導航欄狀態
   useEffect(() => {
     const handleScroll = () => {
-      // 判斷下滑超過 50px 時觸發切換
-      setScrolled(window.scrollY > 50);
+      setScrolled(window.scrollY > 80);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -72,9 +71,9 @@ export default function RootLayout({ children }) {
           .font-inter { font-family: 'Inter', sans-serif; }
           .font-spartan { font-family: 'League Spartan', sans-serif; }
 
-          /* 動態導航欄過渡 */
+          /* 滑動切換動畫 */
           .nav-transition {
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
           }
         `}} />
       </div>
@@ -82,12 +81,12 @@ export default function RootLayout({ children }) {
       <div id="body-mock" className="no-scrollbar bg-[#f7f9fc] text-[#191c1e] antialiased min-h-screen flex flex-col">
         
         {/* 【動態導航列】
-            透明狀態 (scrolled=false): 無背景, 白色字, 帶陰影
-            滾動狀態 (scrolled=true): 白色背景, 黑色字, 底部陰影
+            1. 透明狀態 (Top): 無背景, 白色字 (text-white)
+            2. 滾動狀態 (Scrolled): 白底 (bg-white), 黑字 (text-black), 帶陰影 (shadow-md)
         */}
-        <nav className={`nav-transition fixed top-0 left-0 z-[100] w-full flex items-center justify-between px-6 md:px-12 py-7 ${
+        <nav className={`nav-transition fixed top-0 left-0 z-[100] w-full flex items-center justify-between px-6 md:px-12 py-6 ${
           scrolled 
-            ? 'bg-white text-[#191c1e] shadow-xl py-5' 
+            ? 'bg-white text-black shadow-md py-4' 
             : 'bg-transparent text-white'
         }`}>
             {/* 品牌名稱 - Libre Caslon Text */}
@@ -105,7 +104,7 @@ export default function RootLayout({ children }) {
                         key={index} 
                         href={link.path} 
                         className={`transition-all duration-300 relative hover:text-[#ff3b3b] ${
-                            scrolled ? 'text-[#191c1e]/70' : 'text-white/90 drop-shadow-md'
+                            scrolled ? 'text-black/80' : 'text-white/90 drop-shadow-sm'
                         }`}
                     >
                         {link.name}
@@ -114,7 +113,7 @@ export default function RootLayout({ children }) {
             </div>
         </nav>
 
-        {/* 頁面主要內容注入區 */}
+        {/* 各獨立頁面內容注入區 */}
         <main className="w-full flex-grow">
             {children}
         </main>
