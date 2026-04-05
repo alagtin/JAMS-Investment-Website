@@ -1,9 +1,8 @@
-"use client" // 這行絕對不能少！
+"use client" // 絕對要有這一行，因為 Studio 是純客戶端應用
 
 import { NextStudio } from 'next-sanity/studio'
-import config from '../../../sanity.config' 
+import config from '../../../sanity.config' // 確保路徑對準根目錄的 config
 
 export default function StudioPage() {
-  // 檢查這裡：NextStudio 組件必須正確包裹 config
   return <NextStudio config={config} />
 }
