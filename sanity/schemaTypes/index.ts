@@ -1,9 +1,11 @@
 import team from './team'
 import about from './about'
-import teamPage from './teamPage' // 1. 加這行
+import teamPage from './teamPage'
+import dip from './dip' // 確保有這行
 
 export const schemaTypes = [
   team, 
   about, 
-  teamPage // 2. 把它塞進這個陣列裡
+  teamPage,
+  dip // 確保有這行
 ]
