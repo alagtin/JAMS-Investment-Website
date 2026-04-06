@@ -14,6 +14,16 @@ export default {
       type: 'string',
     },
     {
+      name: 'school',
+      title: '畢業學校 (例如: National Taiwan University)',
+      type: 'string',
+    },
+    {
+      name: 'linkedinUrl',
+      title: '領英連結 (LinkedIn URL)',
+      type: 'url',
+    },
+    {
       name: 'image',
       title: '照片',
       type: 'image',
@@ -21,7 +31,7 @@ export default {
     },
     {
       name: 'order',
-      title: '排序權重 (填 1 代表最前面，越小越靠前)',
+      title: '排序權重 (填 1 代表最前面)',
       type: 'number',
       initialValue: 100,
     },
