@@ -18,7 +18,7 @@ const client = createClient({
 const builder = imageUrlBuilder(client);
 function urlFor(source) { return source ? builder.image(source).url() : null; }
 
-// --- 跑馬燈組件：加上全白化設計與霸氣尺寸 ---
+// --- 跑馬燈組件：拔掉全白濾鏡，保持原始顏色與大尺寸 ---
 const Marquee = ({ images, speed = 30 }) => (
   <div className="relative flex overflow-hidden w-full py-4">
     <motion.div 
@@ -27,9 +27,8 @@ const Marquee = ({ images, speed = 30 }) => (
       transition={{ duration: speed, repeat: Infinity, ease: "linear" }}
     >
       {[...images, ...images, ...images, ...images].map((img, i) => (
-        <div key={i} className="flex items-center justify-center shrink-0 w-[180px] md:w-[260px] h-[70px] md:h-[100px] mx-8 transition-transform hover:scale-110">
-          {/* 🚨 重點：filter brightness-0 invert 將所有 Logo 純白化，並加大尺寸 */}
-          <img src={urlFor(img)} className="max-h-full max-w-full object-contain filter brightness-0 invert" alt="Speaker Logo" />
+        <div key={i} className="flex items-center justify-center shrink-0 mx-8 md:mx-12 transition-transform hover:scale-105">
+          <img src={urlFor(img)} className="h-12 md:h-16 lg:h-20 w-auto max-w-[220px] object-contain" alt="Speaker Logo" />
         </div>
       ))}
     </motion.div>
@@ -92,19 +91,11 @@ export default function DIPPage() {
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0a0f16]/50 to-[#0a0f16]" />
         
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative z-10 text-center px-4">
-          {/* 🚨 1. 修正：100% 使用你準備好的大 Logo，我不敢再換了 */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative z-10 text-center w-full px-8">
+          {/* 🚨 刪除廢字，只保留你的大 Logo */}
           {data.mainLogo && (
-            <img src={urlFor(data.mainLogo)} className="w-[300px] md:w-[500px] object-contain mx-auto mb-10" alt="Main Logo" />
+            <img src={urlFor(data.mainLogo)} className="w-full max-w-3xl md:max-w-5xl object-contain mx-auto" alt="JAMS DIP Hero" />
           )}
-          <h1 className={`${leagueSpartan.className} text-5xl md:text-7xl font-bold tracking-widest uppercase flex flex-col md:flex-row items-center justify-center gap-6`}>
-            <div className="leading-tight md:text-right">
-              JAMS DIRECT<br/>INDUSTRY<br/>PROGRAM
-            </div>
-            <div className="text-7xl md:text-8xl font-light md:border-l md:border-white md:pl-6 leading-none">
-              20<br/>26
-            </div>
-          </h1>
         </motion.div>
       </section>
 
@@ -133,12 +124,12 @@ export default function DIPPage() {
             </div>
           </div>
 
-          {/* 學校 Logos - 巨大化 + 全白化 */}
+          {/* 學校 Logos：拔掉濾鏡，恢復原色 */}
           {data.uniLogos && (
-            <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 px-4">
+            <div className="flex flex-wrap justify-center items-center gap-10 md:gap-16 px-4">
               {data.uniLogos.map((logo, i) => (
-                <div key={i} className="flex items-center justify-center w-[160px] md:w-[240px] h-[90px] md:h-[130px]">
-                  <img src={urlFor(logo)} className="max-h-full max-w-full object-contain filter brightness-0 invert" alt="University Logo" />
+                <div key={i} className="flex items-center justify-center h-12 md:h-16 lg:h-20">
+                  <img src={urlFor(logo)} className="max-h-full max-w-[180px] object-contain" alt="University Logo" />
                 </div>
               ))}
             </div>
@@ -188,16 +179,13 @@ export default function DIPPage() {
             EDUCATION PLANNING
           </h2>
           
-          {/* 🚨 補上：補上漏掉的時間軸 */}
           <EducationTimeline />
 
-          {/* 圖例 */}
           <div className="flex justify-center gap-10 mb-16 text-xs tracking-widest uppercase font-semibold">
             <div className="flex items-center gap-3"><span className="w-5 h-5 bg-gray-500 inline-block rounded-sm"></span> Individual Project</div>
             <div className="flex items-center gap-3"><span className="w-5 h-5 bg-red-600 inline-block rounded-sm"></span> Group Project</div>
           </div>
 
-          {/* 🚨 修正：檢查並修正表格 */}
           <div className="w-full overflow-x-auto">
             <table className="w-full text-base border-collapse border-2 border-white/20 min-w-[900px]">
               <tbody className="text-center font-semibold tracking-wider">
@@ -236,13 +224,12 @@ export default function DIPPage() {
       </section>
 
       {/* 5. MENTOR INTRO */}
-      <section className="py-24 bg-[#16233b]"> {/* 深藍色底 */}
+      <section className="py-24 bg-[#16233b]">
         <div className="max-w-6xl mx-auto px-8 text-center">
           <h2 className={`${leagueSpartan.className} text-4xl font-bold tracking-widest mb-12 text-white`}>
             MENTOR INTRO
           </h2>
           
-          {/* 🚨 2a. 修正：产业表格要在上面 */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-px bg-gray-600 border border-gray-600 mb-16 max-w-5xl mx-auto">
             {["Project Finance", "Private Equity", "Investment Banking", "Sales & Trading", "Private Banking", "Corporate Banking"].map((item, i) => (
               <div key={i} className="bg-[#16233b] py-5 text-base font-bold tracking-wider text-gray-100 uppercase">{item}</div>
@@ -257,12 +244,12 @@ export default function DIPPage() {
             Mentors Background<br/><span className="text-[10px]">TAIWAN • SINGAPORE • USA</span>
           </h3>
 
-          {/* 🚨 2b. 修正：白色方塊拿掉，改成全白化 + 巨大化 LOGO */}
+          {/* Mentor Logos：拔掉濾鏡，恢復原色 */}
           {data.mentorLogos && (
-            <div className="flex flex-wrap justify-center items-center gap-10 md:gap-14 max-w-5xl mx-auto mb-16">
+            <div className="flex flex-wrap justify-center items-center gap-12 md:gap-16 max-w-6xl mx-auto mb-16">
               {data.mentorLogos.map((logo, i) => (
-                <div key={i} className="flex items-center justify-center w-[180px] md:w-[260px] h-[90px] md:h-[130px] transition-transform hover:scale-105">
-                  <img src={urlFor(logo)} className="max-h-full max-w-full object-contain filter brightness-0 invert" alt="Mentor Logo" />
+                <div key={i} className="flex items-center justify-center h-12 md:h-16 lg:h-20 transition-transform hover:scale-105">
+                  <img src={urlFor(logo)} className="max-h-full max-w-[200px] object-contain" alt="Mentor Logo" />
                 </div>
               ))}
             </div>
@@ -283,7 +270,6 @@ export default function DIPPage() {
               <h3 className={`${leagueSpartan.className} text-xs tracking-[0.3em] text-gray-400 mb-10 text-center uppercase font-semibold`}>
                 Speakers Background<br/><span className="text-[10px]">UK • TAIWAN • HONG KONG • USA</span>
               </h3>
-              {/* 🚨 3. 修正：白色方塊拿掉，Logo 全白化、加大且體積對齊 */}
               <div className="py-6">
                 {data.speakerLogos && <Marquee images={data.speakerLogos} speed={35} />}
                 <div className="mt-8">
