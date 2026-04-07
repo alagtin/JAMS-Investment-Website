@@ -18,7 +18,6 @@ const client = createClient({
 const builder = imageUrlBuilder(client);
 function urlFor(source) { return source ? builder.image(source).url() : null; }
 
-// 領英圖標組件
 const LinkedInIcon = () => (
   <svg viewBox="0 0 24 24" className="w-5 h-5 text-white fill-current" xmlns="http://www.w3.org/2000/svg">
     <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451c.978 0 1.77-.773 1.77-1.729V1.729C24 .774 23.203 0 22.225 0z" />
@@ -32,7 +31,6 @@ export default function TeamsPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 🚨 修正：這裡的 linkedinUrl 必須與 Schema 的 name 完全一致 (全小寫 i)
         const teamQuery = `*[_type == "team"] | order(order asc) { _id, name, role, school, linkedinUrl, image }`;
         const resultTeam = await client.fetch(teamQuery);
         setTeamMembers(resultTeam);
@@ -49,17 +47,13 @@ export default function TeamsPage() {
 
   return (
     <div className="relative min-h-screen bg-black text-white">
-      
-      {/* 1. HERO SECTION */}
       <section className="relative h-screen w-full flex items-center justify-start overflow-hidden bg-black px-8 md:px-24">
         {heroData?.backgroundType === 'video' && heroData.videoUrl ? (
           <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-85">
             <source src={heroData.videoUrl} type="video/mp4" />
           </video>
         ) : (
-          heroData?.backgroundImage && (
-            <img src={urlFor(heroData.backgroundImage)} className="absolute inset-0 w-full h-full object-cover opacity-85" alt="hero bg" />
-          )
+          heroData?.backgroundImage && <img src={urlFor(heroData.backgroundImage)} className="absolute inset-0 w-full h-full object-cover opacity-85" alt="hero" />
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black" />
         <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 1 }} className="relative z-10 text-white flex flex-col items-start gap-4">
@@ -68,7 +62,6 @@ export default function TeamsPage() {
         </motion.div>
       </section>
 
-      {/* 2. 成員展示區 - 解決置中與 LinkedIn 連結 */}
       <section className="relative z-10 px-8 md:px-24 py-32 selection:bg-blue-900 selection:text-white">
         <div className="flex flex-wrap justify-center gap-x-12 gap-y-24 max-w-[1400px] mx-auto">
           {teamMembers.map((member) => (
@@ -80,46 +73,26 @@ export default function TeamsPage() {
               viewport={{ once: true }}
               className="flex flex-col items-center group w-full sm:w-[calc(50%-24px)] lg:w-[calc(25%-36px)] max-w-[320px]"
             >
-              {/* 🚨 照片方框：點擊區域 (使用修正後的 linkedinUrl) */}
               <div className="relative aspect-[4/5] w-full bg-[#820000] border-4 border-[#820000] group mb-8 shadow-2xl overflow-hidden transition-all duration-500 hover:scale-[1.03]">
                 {member.linkedinUrl ? (
-                  <a href={member.linkedinUrl} target="_blank" rel="noopener noreferrer" className="block w-full h-full">
-                    {/* 右上角 LinkedIn 圖示 */}
-                    <div className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 drop-shadow-lg">
+                  <a href={member.linkedinUrl} target="_blank" rel="noopener noreferrer" className="block w-full h-full relative z-30">
+                    <div className="absolute top-4 right-4 z-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 drop-shadow-xl">
                       <LinkedInIcon />
                     </div>
-                    {/* 滿版照片 */}
                     {member.image && (
-                      <img 
-                        src={urlFor(member.image)} 
-                        className="h-full w-full object-cover grayscale-0 filter contrast-[0.95] saturate-[0.85] brightness-[1.02] transition-transform duration-1000 group-hover:scale-110"
-                        alt={member.name}
-                      />
+                      <img src={urlFor(member.image)} className="h-full w-full object-cover grayscale-0 filter contrast-[0.95] saturate-[0.85] brightness-[1.05] transition-transform duration-1000 group-hover:scale-110" alt={member.name} />
                     )}
-                    {/* 微光濾鏡 */}
                     <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                   </a>
                 ) : (
                   <div className="w-full h-full">
-                    {member.image && (
-                      <img src={urlFor(member.image)} className="h-full w-full object-cover filter contrast-[0.95] saturate-[0.85] brightness-[1.02]" alt={member.name} />
-                    )}
+                    {member.image && <img src={urlFor(member.image)} className="h-full w-full object-cover filter contrast-[0.95] saturate-[0.85] brightness-[1.05]" alt={member.name} />}
                   </div>
                 )}
               </div>
-              
-              {/* 文字資訊 */}
-              <h3 className={`${libreCaslon.className} text-2xl md:text-3xl tracking-wide mb-2 text-center uppercase`}>
-                {member.name}
-              </h3>
-              <p className={`${leagueSpartan.className} text-[11px] font-bold tracking-[0.3em] text-white/70 uppercase text-center mb-1`}>
-                {member.role}
-              </p>
-              {member.school && (
-                <p className={`${leagueSpartan.className} text-[10px] tracking-[0.2em] text-white/40 uppercase text-center italic leading-relaxed px-4`}>
-                  {member.school}
-                </p>
-              )}
+              <h3 className={`${libreCaslon.className} text-2xl md:text-3xl tracking-wide mb-2 text-center uppercase`}>{member.name}</h3>
+              <p className={`${leagueSpartan.className} text-[11px] font-bold tracking-[0.3em] text-white/70 uppercase text-center mb-1`}>{member.role}</p>
+              {member.school && <p className={`${leagueSpartan.className} text-[10px] tracking-[0.2em] text-white/40 uppercase text-center italic leading-relaxed px-4`}>{member.school}</p>}
             </motion.div>
           ))}
         </div>
