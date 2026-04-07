@@ -68,9 +68,10 @@ export default function TeamsPage() {
         </motion.div>
       </section>
 
-      {/* 2. 成員展示區 - 🚨 括號修復完成版 */}
+      {/* 2. 成員展示區 - 🚨 修正：使用 Flexbox 並置中對齊最後一排 */}
       <section className="relative z-10 px-8 md:px-24 py-32 selection:bg-blue-900 selection:text-white">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-24">
+        {/* 🚨 關鍵：flex flex-wrap justify-center 會讓所有卡片自動置中對齊 */}
+        <div className="flex flex-wrap justify-center gap-x-12 gap-y-24 max-w-[1400px] mx-auto">
           {teamMembers.map((member) => (
             <motion.div
               key={member._id}
@@ -78,9 +79,10 @@ export default function TeamsPage() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="flex flex-col items-center group"
+              // 🚨 修正：設定寬度，在電腦版約佔 1/4 (扣除 gap)，確保排版整齊
+              className="flex flex-col items-center group w-full sm:w-[calc(50%-24px)] lg:w-[calc(25%-36px)] max-w-[320px]"
             >
-              {/* 照片方框：點擊區域 */}
+              {/* 照片方框 */}
               {member.linkedInUrl ? (
                 <a 
                   href={member.linkedInUrl} 
