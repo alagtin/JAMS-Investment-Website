@@ -59,12 +59,12 @@ export default function TeamsPage() {
         
         {/* 背景層 (借用 DIP 頁面的影片/照片設定) */}
         {heroData?.backgroundType === 'video' && heroData.videoUrl ? (
-          <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-60">
+          <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-85">
             <source src={heroData.videoUrl} type="video/mp4" />
           </video>
         ) : (
           heroData?.backgroundImage && (
-            <img src={urlFor(heroData.backgroundImage)} className="absolute inset-0 w-full h-full object-cover opacity-60" alt="hero background" />
+            <img src={urlFor(heroData.backgroundImage)} className="absolute inset-0 w-full h-full object-cover opacity-85" alt="hero background" />
           )
         )}
         

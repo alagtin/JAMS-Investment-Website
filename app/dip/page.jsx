@@ -58,11 +58,11 @@ export default function DIPPage() {
       {/* 1. HERO SECTION - 只有你的影片/照片與大 Logo */}
       <section className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-black">
         {data.backgroundType === 'video' && data.videoUrl ? (
-          <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-60">
+          <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-85">
             <source src={data.videoUrl} type="video/mp4" />
           </video>
         ) : (
-          <img src={urlFor(data.backgroundImage)} className="absolute inset-0 w-full h-full object-cover opacity-60" alt="hero" />
+          <img src={urlFor(data.backgroundImage)} className="absolute inset-0 w-full h-full object-cover opacity-85" alt="hero" />
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black" />
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative z-10 w-full px-8 flex justify-center">
