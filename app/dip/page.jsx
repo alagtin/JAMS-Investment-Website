@@ -18,44 +18,22 @@ const client = createClient({
 const builder = imageUrlBuilder(client);
 function urlFor(source) { return source ? builder.image(source).url() : null; }
 
-// --- 跑馬燈組件：拔掉全白濾鏡，保持原始顏色與大尺寸 ---
+// 跑馬燈組件：拔掉濾鏡、大尺寸、對齊高度
 const Marquee = ({ images, speed = 30 }) => (
-  <div className="relative flex overflow-hidden w-full py-4">
+  <div className="relative flex overflow-hidden w-full py-10">
     <motion.div 
       className="flex whitespace-nowrap items-center"
-      animate={{ x: [0, -1500] }}
+      animate={{ x: [0, -1200] }}
       transition={{ duration: speed, repeat: Infinity, ease: "linear" }}
     >
-      {[...images, ...images, ...images, ...images].map((img, i) => (
-        <div key={i} className="flex items-center justify-center shrink-0 mx-8 md:mx-12 transition-transform hover:scale-105">
-          <img src={urlFor(img)} className="h-12 md:h-16 lg:h-20 w-auto max-w-[220px] object-contain" alt="Speaker Logo" />
+      {[...images, ...images, ...images].map((img, i) => (
+        <div key={i} className="flex items-center justify-center shrink-0 mx-12 md:mx-16 transition-transform hover:scale-105">
+          <img src={urlFor(img)} className="h-16 md:h-20 lg:h-24 w-auto object-contain" alt="Logo" />
         </div>
       ))}
     </motion.div>
   </div>
 );
-
-// --- Education Timeline 組件 ---
-const EducationTimeline = () => {
-  const years = [2023, 2024, 2025, 2026, 2027];
-  return (
-    <div className="max-w-6xl mx-auto px-8 mb-24 overflow-x-auto">
-      <div className="min-w-[800px]">
-        {/* 年份橫軸 */}
-        <div className="grid grid-cols-5 border-b-2 border-white/20 pb-4 mb-8 text-center text-white/40 text-xs tracking-[0.3em]">
-          {years.map(year => <div key={year}>{year}</div>)}
-        </div>
-        {/* 時間軸條狀圖 */}
-        <div className="space-y-6 relative text-xs font-bold tracking-widest uppercase">
-          <div className="h-10 w-[20%] bg-blue-900/50 border-l-2 border-blue-400 flex items-center px-6">Undergraduate</div>
-          <div className="h-10 w-[40%] translate-x-[20%] bg-indigo-900/50 border-l-2 border-indigo-400 flex items-center px-6">DIP Core Training</div>
-          <div className="h-10 w-[30%] translate-x-[50%] bg-purple-900/50 border-l-2 border-purple-400 flex items-center px-6">Market Internship</div>
-          <div className="h-10 w-[20%] translate-x-[80%] bg-zinc-800 border-l-2 border-white flex items-center px-6">Master / Career</div>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 export default function DIPPage() {
   const [data, setData] = useState(null);
@@ -63,10 +41,7 @@ export default function DIPPage() {
   useEffect(() => {
     const fetchDIP = async () => {
       try {
-        const result = await client.fetch(`*[_type == "dip"][0]{
-          ...,
-          "videoUrl": backgroundVideo.asset->url
-        }`);
+        const result = await client.fetch(`*[_type == "dip"][0]{..., "videoUrl": backgroundVideo.asset->url}`);
         setData(result);
       } catch (err) {
         console.error("Sanity Fetch Error:", err);
@@ -75,61 +50,54 @@ export default function DIPPage() {
     fetchDIP();
   }, []);
 
-  if (!data) return <div className="bg-[#0a0f16] h-screen flex items-center justify-center text-white">Loading DIP Program...</div>;
+  if (!data) return <div className="bg-[#faf9f5] h-screen flex items-center justify-center text-[#1a2332]">Loading...</div>;
 
   return (
-    <div className="bg-[#0a0f16] text-white selection:bg-blue-900 selection:text-white">
+    <div className="bg-[#faf9f5] text-[#1a2332] selection:bg-black selection:text-white">
       
-      {/* 1. HERO SECTION */}
-      <section className="relative h-screen w-full flex items-center justify-center">
+      {/* 1. HERO SECTION - 只有你的影片/照片與大 Logo */}
+      <section className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-black">
         {data.backgroundType === 'video' && data.videoUrl ? (
           <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-60">
             <source src={data.videoUrl} type="video/mp4" />
           </video>
         ) : (
-          <img src={urlFor(data.backgroundImage)} className="absolute inset-0 w-full h-full object-cover opacity-60" />
+          <img src={urlFor(data.backgroundImage)} className="absolute inset-0 w-full h-full object-cover opacity-60" alt="hero" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0a0f16]/50 to-[#0a0f16]" />
-        
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative z-10 text-center w-full px-8">
-          {/* 🚨 刪除廢字，只保留你的大 Logo */}
-          {data.mainLogo && (
-            <img src={urlFor(data.mainLogo)} className="w-full max-w-3xl md:max-w-5xl object-contain mx-auto" alt="JAMS DIP Hero" />
-          )}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black" />
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative z-10 w-full px-8 flex justify-center">
+          {data.mainLogo && <img src={urlFor(data.mainLogo)} className="w-full max-w-4xl md:max-w-6xl object-contain" alt="DIP" />}
         </motion.div>
       </section>
 
-      {/* 2. SELECTIONS WORLDWIDE */}
-      <section className="py-24 bg-[#dde3e9] text-[#1a2332]">
-        <div className="text-center mb-16 px-4">
-          <h2 className={`${leagueSpartan.className} text-3xl font-bold tracking-widest mb-4 uppercase`}>SELECTIONS WORLDWIDE</h2>
-          <p className={`${leagueSpartan.className} text-xs tracking-[0.2em] uppercase font-semibold text-[#1a2332]/70`}>
+      {/* 2. SELECTIONS WORLDWIDE - 米白底、大標題、大數字 */}
+      <section className="py-32 px-8 md:px-24">
+        <div className="text-center mb-20 px-4">
+          <h2 className={`${leagueSpartan.className} text-4xl font-bold tracking-[0.4em] mb-6 uppercase text-[#1a2332]/40`}>SELECTIONS WORLDWIDE</h2>
+          <p className={`${leagueSpartan.className} text-sm tracking-[0.3em] uppercase font-bold text-[#1a2332]/80`}>
             USA • UK • ITALY • FRANCE • TAIWAN • HONG KONG • SINGAPORE • INDONESIA
           </p>
         </div>
-
-        <div className="max-w-6xl mx-auto px-8">
-          <div className="grid grid-cols-3 gap-6 text-center border-y-2 border-[#1a2332] py-12 mb-20">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-3 gap-8 text-center border-y-2 border-[#1a2332] py-20 mb-24">
             <div>
-              <div className={`${leagueSpartan.className} text-7xl font-bold`}>{data.admittedCount || "15"}</div>
-              <div className="text-sm font-bold tracking-widest mt-2 uppercase">FINAL ADMITS</div>
+              <div className={`${leagueSpartan.className} text-7xl md:text-9xl font-bold leading-none`}>{data.admittedCount || "15"}</div>
+              <div className="text-sm md:text-lg font-bold tracking-[0.3em] mt-6">FINAL ADMITS</div>
             </div>
             <div className="border-x-2 border-[#1a2332]">
-              <div className={`${leagueSpartan.className} text-7xl font-bold`}>{data.admissionRate || "9%"}</div>
-              <div className="text-sm font-bold tracking-widest mt-2 uppercase">ACCEPTANCE RATE</div>
+              <div className={`${leagueSpartan.className} text-7xl md:text-9xl font-bold leading-none`}>{data.admissionRate || "9%"}</div>
+              <div className="text-sm md:text-lg font-bold tracking-[0.3em] mt-6">ACCEPTANCE RATE</div>
             </div>
             <div>
-              <div className={`${leagueSpartan.className} text-7xl font-bold`}>{data.totalApplicants || "165"}</div>
-              <div className="text-sm font-bold tracking-widest mt-2 uppercase">APPLICATIONS RECEIVED</div>
+              <div className={`${leagueSpartan.className} text-7xl md:text-9xl font-bold leading-none`}>{data.totalApplicants || "165"}</div>
+              <div className="text-sm md:text-lg font-bold tracking-[0.3em] mt-6">APPLICATIONS RECEIVED</div>
             </div>
           </div>
-
-          {/* 學校 Logos：拔掉濾鏡，恢復原色 */}
           {data.uniLogos && (
-            <div className="flex flex-wrap justify-center items-center gap-10 md:gap-16 px-4">
+            <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24">
               {data.uniLogos.map((logo, i) => (
-                <div key={i} className="flex items-center justify-center h-12 md:h-16 lg:h-20">
-                  <img src={urlFor(logo)} className="max-h-full max-w-[180px] object-contain" alt="University Logo" />
+                <div key={i} className="h-16 md:h-24 w-auto flex items-center justify-center transition-transform hover:scale-110">
+                  <img src={urlFor(logo)} className="max-h-full max-w-[240px] object-contain" alt="Uni Logo" />
                 </div>
               ))}
             </div>
@@ -137,119 +105,83 @@ export default function DIPPage() {
         </div>
       </section>
 
-      {/* 3. PROGRAM OVERVIEW */}
-      <section className="py-24 bg-[url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2000')] bg-cover bg-center relative selection:bg-black selection:text-white">
-        <div className="absolute inset-0 bg-[#eef1f4]/95" />
-        <div className="relative z-10 max-w-7xl mx-auto px-8 text-[#1a2332]">
-          <h2 className={`${leagueSpartan.className} text-4xl font-bold text-center tracking-widest mb-16`}>
-            PROGRAM OVERVIEW
-          </h2>
-          
-          <div className="grid grid-cols-3 bg-white border-2 border-[#1a2332]/30 shadow-2xl">
-            <div className="font-bold text-center py-6 border-b-2 border-[#1a2332]/30 border-r-2 uppercase tracking-widest text-sm">Guest Speaker</div>
-            <div className="font-bold text-center py-6 border-b-2 border-[#1a2332]/30 border-r-2 uppercase tracking-widest text-sm">Mentorship</div>
-            <div className="font-bold text-center py-6 border-b-2 border-[#1a2332]/30 uppercase tracking-widest text-sm">Technical Training</div>
-            
-            <div className="p-10 border-r-2 border-[#1a2332]/30 space-y-10 font-semibold text-lg leading-snug">
-              <div>Industry Insights</div>
-              <div>Investment Banking</div>
-              <div>Private Equity</div>
-              <div>Project Financing</div>
+      {/* 3. PROGRAM OVERVIEW - 米白底、大標題、三欄表格 */}
+      <section className="py-32 px-8 md:px-24">
+        <div className="max-w-7xl mx-auto">
+          <h2 className={`${libreCaslon.className} text-6xl md:text-8xl font-bold text-center tracking-widest mb-24 uppercase`}>PROGRAM OVERVIEW</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 bg-white border-2 border-[#1a2332] shadow-2xl">
+            {["Guest Speaker", "Mentorship", "Technical Training"].map((h, i) => (
+              <div key={i} className={`font-bold text-center py-10 border-b-2 border-[#1a2332] uppercase tracking-[0.3em] text-sm md:text-base ${i < 2 ? 'border-r-2' : ''}`}>{h}</div>
+            ))}
+            <div className="p-12 border-r-2 border-[#1a2332] space-y-12 font-bold text-xl leading-snug">
+              <div>Industry Insights</div><div>Investment Banking</div><div>Private Equity</div><div>Project Financing</div>
             </div>
-            <div className="p-10 border-r-2 border-[#1a2332]/30 space-y-10 font-semibold text-lg leading-snug">
-              <div>Career Training & Coaching</div>
-              <div>Interview Preparation</div>
-              <div>Resume Workshop</div>
-              <div>Private Alumni Network</div>
+            <div className="p-12 border-r-2 border-[#1a2332] space-y-12 font-bold text-xl leading-snug">
+              <div>Career Training</div><div>Interview Prep</div><div>Resume Workshop</div><div>Alumni Network</div>
             </div>
-            <div className="p-10 space-y-10 font-semibold text-lg leading-snug">
-              <div>Deal Analysis & Underwriting Fundamentals</div>
-              <div>Discounted Cash Flow Modeling</div>
-              <div>Accretion / Dilution Modeling</div>
-              <div>Leveraged Buyout Modeling and more...</div>
+            <div className="p-12 space-y-12 font-bold text-xl leading-snug text-blue-900">
+              <div>Deal Analysis Fundamentals</div><div>DCF Modeling</div><div>Accretion/Dilution Analysis</div><div>Leveraged Buyout Modeling</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 4. EDUCATION PLANNING */}
-      <section className="py-24 bg-black text-white">
-        <div className="max-w-7xl mx-auto px-8">
-          <h2 className={`${leagueSpartan.className} text-4xl font-bold text-center tracking-widest mb-16`}>
-            EDUCATION PLANNING
-          </h2>
-          
-          <EducationTimeline />
-
-          <div className="flex justify-center gap-10 mb-16 text-xs tracking-widest uppercase font-semibold">
-            <div className="flex items-center gap-3"><span className="w-5 h-5 bg-gray-500 inline-block rounded-sm"></span> Individual Project</div>
-            <div className="flex items-center gap-3"><span className="w-5 h-5 bg-red-600 inline-block rounded-sm"></span> Group Project</div>
+      {/* 4. EDUCATION PLANNING - 🚨 修正：移除 Timeline (進度條)，保留標題與表格 */}
+      <section className="py-32 px-8 md:px-24">
+        <h2 className={`${libreCaslon.className} text-6xl md:text-8xl font-bold text-center tracking-widest mb-20 uppercase`}>EDUCATION PLANNING</h2>
+        <div className="max-w-7xl mx-auto">
+          <div className="flex justify-center gap-12 mb-20 text-sm tracking-[0.3em] uppercase font-bold text-[#1a2332]/60">
+            <div className="flex items-center gap-4"><span className="w-6 h-6 bg-gray-600 inline-block"></span> Individual Project</div>
+            <div className="flex items-center gap-4"><span className="w-6 h-6 bg-red-700 inline-block"></span> Group Project</div>
           </div>
-
-          <div className="w-full overflow-x-auto">
-            <table className="w-full text-base border-collapse border-2 border-white/20 min-w-[900px]">
-              <tbody className="text-center font-semibold tracking-wider">
+          <div className="overflow-x-auto">
+            <table className="w-full text-lg border-collapse border-2 border-[#1a2332] min-w-[950px]">
+              <tbody className="text-center font-bold tracking-wider">
                 <tr>
-                  <td rowSpan="6" className="border-2 border-white/20 p-6 w-36 tracking-[0.4em] uppercase text-sm">TOPICS</td>
-                  <td className="border-2 border-white/20 p-5 text-left pl-8">MODELING FUNDAMENTALS</td>
-                  <td rowSpan="6" className="border-2 border-white/20 p-6 text-gray-500 uppercase text-xs">INDIVIDUAL PROJECT: BUILD A 3-STATEMENT MODEL</td>
+                  <td rowSpan="6" className="border-2 border-[#1a2332] p-8 w-40 tracking-[0.5em] uppercase text-xs">TOPICS</td>
+                  <td className="border-2 border-[#1a2332] p-6 text-left pl-10">MODELING FUNDAMENTALS</td>
+                  <td rowSpan="6" className="border-2 border-[#1a2332] p-8 text-[#1a2332]/30 uppercase text-xs">BUILD A 3-STATEMENT MODEL</td>
                 </tr>
-                <tr><td className="border-2 border-white/20 p-5 text-left pl-8">3-STATEMENT PROJECTION</td></tr>
-                <tr><td className="border-2 border-white/20 p-5 text-left pl-8">ADVANCED ACCOUNTING</td></tr>
-                <tr><td className="border-2 border-white/20 p-5 text-left pl-8">ENTERPRISE VALUE & EQUITY VALUE</td></tr>
-                <tr><td className="border-2 border-white/20 p-5 text-left pl-8">WACC & DCF</td></tr>
-                <tr><td className="border-2 border-white/20 p-5 text-left pl-8">TRADING COMPARABLES</td></tr>
-
+                {["3-STATEMENT PROJECTION", "ADVANCED ACCOUNTING", "ENTERPRISE & EQUITY VALUE", "WACC & DCF", "TRADING COMPARABLES"].map(t => (
+                  <tr key={t}><td className="border-2 border-[#1a2332] p-6 text-left pl-10">{t}</td></tr>
+                ))}
                 <tr>
-                  <td rowSpan="5" className="border-2 border-white/20 p-6 w-36 tracking-[0.4em] uppercase text-sm"></td>
-                  <td className="border-2 border-white/20 p-5 text-left pl-8">LBO / DCF BASICS & MODELING</td>
-                  <td rowSpan="2" className="border-2 border-white/20 p-6 text-gray-500 uppercase text-xs">INDIVIDUAL PROJECT: BUILD A DCF MODEL / LBO MODEL</td>
+                  <td rowSpan="2" className="border-2 border-[#1a2332]"></td>
+                  <td className="border-2 border-[#1a2332] p-6 text-left pl-10">LBO / DCF BASICS & MODELING</td>
+                  <td rowSpan="2" className="border-2 border-[#1a2332] p-8 text-[#1a2332]/30 uppercase text-xs">BUILD A DCF / LBO MODEL</td>
                 </tr>
-                <tr><td className="border-2 border-white/20 p-5 text-left pl-8">PROJECT FINANCE MODELING</td></tr>
-
+                <tr><td className="border-2 border-[#1a2332] p-6 text-left pl-10">PROJECT FINANCE MODELING</td></tr>
                 <tr>
-                  <td className="border-2 border-white/20 p-5 text-left pl-8">ACCRETION/DILUTION ANALYSIS</td>
-                  <td rowSpan="2" className="border-2 border-white/20 p-6 text-gray-500 uppercase text-xs font-bold text-red-600">GROUP PROJECT: M&A PITCH BOOK</td>
+                  <td rowSpan="3" className="border-2 border-[#1a2332]"></td>
+                  <td className="border-2 border-[#1a2332] p-6 text-left pl-10">ACCRETION/DILUTION ANALYSIS</td>
+                  <td rowSpan="2" className="border-2 border-[#1a2332] p-8 text-red-700 uppercase text-xs font-black">GROUP PROJECT: M&A PITCH BOOK</td>
                 </tr>
-                <tr><td className="border-2 border-white/20 p-5 text-left pl-8">M&A MODELING</td></tr>
-
-                <tr>
-                  <td className="border-2 border-white/20 p-5 text-left pl-8">ESG MODELING</td>
-                  <td className="border-2 border-white/20 p-6 text-gray-500 uppercase text-xs font-bold text-red-600">GROUP PROJECT: ESG MODELING / PITCH BOOK</td>
-                </tr>
+                <tr><td className="border-2 border-[#1a2332] p-6 text-left pl-10">M&A MODELING</td></tr>
+                <tr><td className="border-2 border-[#1a2332] p-6 text-left pl-10">ESG MODELING</td><td className="border-2 border-[#1a2332] p-8 text-red-700 uppercase text-xs font-black">GROUP PROJECT: ESG PITCH BOOK</td></tr>
               </tbody>
             </table>
           </div>
         </div>
       </section>
 
-      {/* 5. MENTOR INTRO */}
-      <section className="py-24 bg-[#16233b]">
-        <div className="max-w-6xl mx-auto px-8 text-center">
-          <h2 className={`${leagueSpartan.className} text-4xl font-bold tracking-widest mb-12 text-white`}>
-            MENTOR INTRO
-          </h2>
-          
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-px bg-gray-600 border border-gray-600 mb-16 max-w-5xl mx-auto">
+      {/* 5. MENTOR INTRO - 產業表格 > 內文 > LOGO 牆 */}
+      <section className="py-32 px-8 md:px-24 bg-[#f3f2ec]">
+        <div className="max-w-7xl mx-auto text-center">
+          <h2 className={`${libreCaslon.className} text-6xl md:text-8xl font-bold tracking-widest mb-20 uppercase`}>MENTOR INTRO</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-px bg-[#1a2332]/20 border border-[#1a2332]/20 mb-24 max-w-6xl mx-auto shadow-xl">
             {["Project Finance", "Private Equity", "Investment Banking", "Sales & Trading", "Private Banking", "Corporate Banking"].map((item, i) => (
-              <div key={i} className="bg-[#16233b] py-5 text-base font-bold tracking-wider text-gray-100 uppercase">{item}</div>
+              <div key={i} className="bg-[#faf9f5]/80 backdrop-blur-sm py-8 text-base md:text-xl font-bold tracking-[0.3em] uppercase">{item}</div>
             ))}
           </div>
-
-          <p className={`${libreCaslon.className} text-base md:text-lg text-gray-300 max-w-5xl mx-auto leading-relaxed mb-20 text-justify`}>
-            Mentors bring clarity, perspectives, and real industry value to the member experience. They offer structured guidance on finance careers, share practical insights drawn from real transactions and sector experience, and help members build a stronger understanding of paths such as Private Equity and Investment Banking. Beyond industry exposure, mentors also support resume development, interview preparation, and personal positioning. Most importantly, they help members form meaningful connections and build long-term relationships within the finance industry.
+          <p className={`${libreCaslon.className} text-lg md:text-2xl text-[#1a2332]/80 max-w-5xl mx-auto leading-relaxed mb-24 text-justify px-4`}>
+            Mentors bring clarity, perspectives, and real industry value to the member experience... Beyond industry exposure, mentors also support resume development, interview preparation, and personal positioning.
           </p>
-
-          <h3 className={`${leagueSpartan.className} text-xs tracking-[0.3em] text-gray-400 mb-12 uppercase font-semibold`}>
-            Mentors Background<br/><span className="text-[10px]">TAIWAN • SINGAPORE • USA</span>
-          </h3>
-
-          {/* Mentor Logos：拔掉濾鏡，恢復原色 */}
+          <h3 className={`${leagueSpartan.className} text-xs tracking-[0.5em] text-[#1a2332]/40 mb-16 uppercase font-black`}>MENTORS BACKGROUND: TAIWAN • SINGAPORE • USA</h3>
           {data.mentorLogos && (
-            <div className="flex flex-wrap justify-center items-center gap-12 md:gap-16 max-w-6xl mx-auto mb-16">
+            <div className="flex flex-wrap justify-center items-center gap-16 md:gap-24">
               {data.mentorLogos.map((logo, i) => (
-                <div key={i} className="flex items-center justify-center h-12 md:h-16 lg:h-20 transition-transform hover:scale-105">
-                  <img src={urlFor(logo)} className="max-h-full max-w-[200px] object-contain" alt="Mentor Logo" />
+                <div key={i} className="flex items-center justify-center h-16 md:h-24 transition-transform hover:scale-110">
+                  <img src={urlFor(logo)} className="max-h-full max-w-[280px] object-contain" alt="Mentor" />
                 </div>
               ))}
             </div>
@@ -257,48 +189,25 @@ export default function DIPPage() {
         </div>
       </section>
 
-      {/* 6. GUEST SPEAKER INTRO */}
-      <section className="py-24 bg-black">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 relative">
-          <h2 className={`${leagueSpartan.className} text-4xl font-bold tracking-widest text-center mb-16 text-white`}>
-            GUEST SPEAKER INTRO
-          </h2>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            {/* 左側：Logos 跑馬燈 */}
+      {/* 6. GUEST SPEAKER INTRO - 跑馬燈 + TOPICS */}
+      <section className="py-32 px-8 md:px-24">
+        <div className="max-w-7xl mx-auto">
+          <h2 className={`${libreCaslon.className} text-6xl md:text-8xl font-bold tracking-widest text-center mb-24 uppercase`}>GUEST SPEAKER INTRO</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-start">
             <div className="w-full overflow-hidden">
-              <h3 className={`${leagueSpartan.className} text-xs tracking-[0.3em] text-gray-400 mb-10 text-center uppercase font-semibold`}>
-                Speakers Background<br/><span className="text-[10px]">UK • TAIWAN • HONG KONG • USA</span>
-              </h3>
-              <div className="py-6">
-                {data.speakerLogos && <Marquee images={data.speakerLogos} speed={35} />}
-                <div className="mt-8">
-                  {data.speakerLogos && <Marquee images={data.speakerLogos.slice().reverse()} speed={40} />}
-                </div>
-              </div>
+               <h3 className={`${leagueSpartan.className} text-xs tracking-[0.5em] text-[#1a2332]/30 mb-12 text-center uppercase font-black`}>SPEAKERS BACKGROUND: UK • TAIWAN • HK • USA</h3>
+               {data.speakerLogos && (
+                 <>
+                  <Marquee images={data.speakerLogos} speed={35} />
+                  <div className="mt-16"><Marquee images={data.speakerLogos.slice().reverse()} speed={40} /></div>
+                 </>
+               )}
             </div>
-
-            {/* 右側：Topics 列表 */}
-            <div className="px-6 relative z-10">
-              <h3 className={`${leagueSpartan.className} text-xs tracking-[0.3em] text-gray-400 mb-10 text-center uppercase font-semibold`}>
-                Topics<br/><span className="text-[10px]">PRIMARY MARKET • SECONDARY MARKET • DATA ANALYSIS</span>
-              </h3>
-              <div className="border-t border-gray-700 max-w-2xl mx-auto lg:max-w-none">
-                {[
-                  "DEAL ADVISORY",
-                  "RENEWABLE ENERGY PROJECT FINANCE",
-                  "PRIVATE EQUITY IN MIAMI",
-                  "NYC FORMER STERLING INVESTMENT BANK",
-                  "TAIWAN GROWTH EQUITY",
-                  "EQUITY RESEARCH",
-                  "EUROPE INFRASTRUCTURE PRIVATE EQUITY",
-                  "HONG KONG PRIVATE BANKING",
-                  "TAIWAN PRIVATE EQUITY",
-                  "FIXED INCOME & ASSET MANAGEMENT"
-                ].map((topic, i) => (
-                  <div key={i} className="border-b border-gray-700 py-5 text-sm md:text-base tracking-widest font-semibold text-gray-200 hover:text-white hover:bg-white/5 transition-colors cursor-default px-4 rounded-sm">
-                    {topic}
-                  </div>
+            <div className="px-8">
+              <h3 className={`${leagueSpartan.className} text-xs tracking-[0.5em] text-[#1a2332]/30 mb-12 text-center uppercase font-black`}>TOPICS: PRIMARY & SECONDARY MARKET</h3>
+              <div className="border-t-2 border-[#1a2332]/10">
+                {["DEAL ADVISORY", "RENEWABLE ENERGY FINANCE", "PRIVATE EQUITY IN MIAMI", "NYC INVESTMENT BANK", "GROWTH EQUITY", "EQUITY RESEARCH", "INFRASTRUCTURE PE", "HK PRIVATE BANKING", "TAIWAN PE", "FIXED INCOME"].map(topic => (
+                  <div key={topic} className="border-b-2 border-[#1a2332]/10 py-8 text-base md:text-xl tracking-[0.3em] font-bold text-[#1a2332]/70 hover:text-blue-900 transition-colors cursor-default px-6">{topic}</div>
                 ))}
               </div>
             </div>
@@ -306,10 +215,9 @@ export default function DIPPage() {
         </div>
       </section>
 
-      <footer className="py-10 text-center border-t border-white/10 selection:bg-black selection:text-white">
-        <p className={`${leagueSpartan.className} text-[11px] text-white/40 tracking-[0.6em]`}>© 2026 JAMS INVESTMENT. ALL RIGHTS RESERVED.</p>
+      <footer className="py-16 text-center border-t border-[#1a2332]/10">
+        <p className={`${leagueSpartan.className} text-xs text-[#1a2332]/40 tracking-[0.8em]`}>© 2026 JAMS INVESTMENT. ALL RIGHTS RESERVED.</p>
       </footer>
-
     </div>
   );
 }
