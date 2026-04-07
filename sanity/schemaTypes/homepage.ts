@@ -3,7 +3,7 @@ export default {
   title: '首頁門面管理',
   type: 'document',
   fields: [
-    // --- 第一卡：JAMS INVESTMENT ---
+    // 第一卡：JAMS INVESTMENT
     {
       name: 'jamsSection',
       title: '第一卡：JAMS INVESTMENT (Link to ABOUT)',
@@ -21,7 +21,7 @@ export default {
         { name: 'bgVideo', title: '背景影片 (MP4)', type: 'file', hidden: ({ parent }) => parent?.bgType !== 'video' },
       ]
     },
-    // --- 第二卡：DIP PROGRAM ---
+    // 第二卡：DIP PROGRAM
     {
       name: 'dipSection',
       title: '第二卡：DIP PROGRAM (Link to DIP)',
