@@ -38,28 +38,26 @@ export default function HomePage() {
       content: data.jamsSection, 
       video: data.jamsVideo, 
       link: '/about',
-      label: 'ENTER JAMS INVESTMENT'
+      label: 'LEARN MORE ABOUT JAMS'
     },
     { 
       id: 'dip', 
       content: data.dipSection, 
       video: data.dipVideo, 
       link: '/dip',
-      label: 'ENTER DIP PROGRAM'
+      label: 'EXPLORE DIP PROGRAM'
     }
   ];
 
   return (
-    /* 🚨 關鍵：h-screen + overflow-y-scroll + snap-y mandatory 實現自動吸附滾動 */
-    <main className="h-screen overflow-y-scroll snap-y snap-mandatory bg-black scroll-smooth">
-      
+    <main className="h-screen overflow-y-scroll snap-y snap-mandatory bg-black scroll-smooth no-scrollbar">
       {sections.map((sec) => (
         <section 
           key={sec.id} 
-          className="relative h-screen w-full snap-start snap-always flex items-center justify-center overflow-hidden group cursor-pointer"
+          className="relative h-screen w-full snap-start snap-always flex items-center justify-center overflow-hidden group"
         >
-          {/* 點擊跳轉 */}
-          <Link href={sec.link} className="absolute inset-0 z-30"></Link>
+          {/* 點擊整區跳轉 */}
+          <Link href={sec.link} className="absolute inset-0 z-30 cursor-pointer"></Link>
 
           {/* 背景層 */}
           <div className="absolute inset-0 z-0">
@@ -70,40 +68,45 @@ export default function HomePage() {
             ) : (
               <img 
                 src={urlFor(sec.content.bgImage)} 
-                className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-1000" 
+                className="w-full h-full object-cover opacity-50 group-hover:scale-105 transition-transform duration-[2000ms]" 
                 alt="bg" 
               />
             )}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/70" />
           </div>
 
-          {/* 內容層 (Logo) */}
+          {/* 內容層 (Logo) - 🚨 這裡比例縮小了 */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 1 }}
             className="relative z-10 text-center px-8"
           >
             {sec.content.logo && (
               <img 
                 src={urlFor(sec.content.logo)} 
-                className="w-full max-w-4xl md:max-w-5xl lg:max-w-6xl object-contain mx-auto transition-transform duration-500 group-hover:scale-[1.02]" 
+                // 🚨 重點：將 max-w 鎖定在 350px-500px 之間，這才是 ABOUT 頁面的優雅比例
+                className="w-full max-w-[320px] md:max-w-[450px] lg:max-w-[500px] object-contain mx-auto transition-all duration-700" 
                 alt="logo" 
               />
             )}
             
             {/* 提示字眼 */}
-            <div className="mt-12 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-               <span className="text-white/40 tracking-[0.6em] text-xs font-bold uppercase border border-white/20 px-6 py-2 backdrop-blur-md">
+            <div className="mt-16 opacity-0 group-hover:opacity-100 transition-all duration-700 transform translate-y-4 group-hover:translate-y-0">
+               <span className="text-white/50 tracking-[0.6em] text-[10px] font-bold uppercase border border-white/10 px-8 py-3 backdrop-blur-sm hover:bg-white hover:text-black transition-colors">
                  {sec.label}
                </span>
             </div>
           </motion.div>
 
-          {/* 滾動提示 (只在第一頁顯示) */}
+          {/* 滾動提示 */}
           {sec.id === 'jams' && (
-            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 animate-bounce opacity-40">
-              <div className="w-px h-12 bg-white" />
+            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 opacity-30">
+              <motion.div 
+                animate={{ y: [0, 15, 0] }} 
+                transition={{ repeat: Infinity, duration: 2 }}
+                className="w-px h-16 bg-gradient-to-b from-white to-transparent" 
+              />
             </div>
           )}
         </section>
