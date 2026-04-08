@@ -35,13 +35,12 @@ export default function RootLayout({ children }) {
           </div>
         </nav>
 
-        {/* 內容區：確保 Footer 永遠在最底 */}
         <main className="flex-grow w-full">
           {children}
         </main>
 
-        {/* 🚨 修正：移除 snap-end，解決一進頁面就跳到底部的 Bug */}
-        <footer className="w-full shrink-0 bg-black py-20 px-8 md:px-16 border-t border-white/10 relative z-[90]">
+        {/* 🚨 關鍵修正：加上 snap-start，讓瀏覽器允許捲軸停在這裡 */}
+        <footer className="w-full shrink-0 bg-black py-20 px-8 md:px-16 border-t border-white/10 relative z-[90] snap-start">
           <div className="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-start lg:items-center gap-12 lg:gap-0">
             <div className={`${libreCaslon.className} text-white text-2xl md:text-3xl font-bold uppercase tracking-[0.1em] whitespace-nowrap`}>
               JAMS Investment

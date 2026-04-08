@@ -19,11 +19,12 @@ export default function HomePage() {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    // 🚨 修正：進場先強制滾回最頂端，並開啟吸附
+    // 進入首頁：強制置頂並開啟吸附
     window.scrollTo(0, 0);
     document.documentElement.classList.add('snap-y', 'snap-mandatory');
     
     return () => {
+      // 徹底清除，防止干擾其他分頁
       document.documentElement.classList.remove('snap-y', 'snap-mandatory');
     };
   }, []);
