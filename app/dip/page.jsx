@@ -18,23 +18,6 @@ const client = createClient({
 const builder = imageUrlBuilder(client);
 function urlFor(source) { return source ? builder.image(source).url() : null; }
 
-// 跑馬燈組件：拔掉濾鏡、大尺寸、對齊高度
-const Marquee = ({ images, speed = 30 }) => (
-  <div className="relative flex overflow-hidden w-full py-10">
-    <motion.div 
-      className="flex whitespace-nowrap items-center"
-      animate={{ x: [0, -1200] }}
-      transition={{ duration: speed, repeat: Infinity, ease: "linear" }}
-    >
-      {[...images, ...images, ...images].map((img, i) => (
-        <div key={i} className="flex items-center justify-center shrink-0 mx-12 md:mx-16 transition-transform hover:scale-105">
-          <img src={urlFor(img)} className="h-16 md:h-20 lg:h-24 w-auto object-contain" alt="Logo" />
-        </div>
-      ))}
-    </motion.div>
-  </div>
-);
-
 export default function DIPPage() {
   const [data, setData] = useState(null);
 
@@ -55,22 +38,23 @@ export default function DIPPage() {
   return (
     <div className="bg-[#faf9f5] text-[#1a2332] selection:bg-black selection:text-white">
       
-      {/* 1. HERO SECTION - 只有你的影片/照片與大 Logo */}
+      {/* 1. HERO SECTION - 調整亮度、Logo大小比例 */}
       <section className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-black">
         {data.backgroundType === 'video' && data.videoUrl ? (
-          <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-85">
+          <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-100">
             <source src={data.videoUrl} type="video/mp4" />
           </video>
         ) : (
-          <img src={urlFor(data.backgroundImage)} className="absolute inset-0 w-full h-full object-cover opacity-85" alt="hero" />
+          <img src={urlFor(data.backgroundImage)} className="absolute inset-0 w-full h-full object-cover opacity-100" alt="hero" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black" />
+        {/* 減輕黑色的遮罩，讓影片亮一點 */}
+        <div className="absolute inset-0 bg-black/30" />
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative z-10 w-full px-8 flex justify-center">
-          {data.mainLogo && <img src={urlFor(data.mainLogo)} className="w-full max-w-4xl md:max-w-6xl object-contain" alt="DIP" />}
+          {data.mainLogo && <img src={urlFor(data.mainLogo)} className="w-full max-w-lg md:max-w-2xl object-contain" alt="DIP" />}
         </motion.div>
       </section>
 
-      {/* 2. SELECTIONS WORLDWIDE - 米白底、大標題、大數字 */}
+      {/* 2. SELECTIONS WORLDWIDE - 強制兩排排版 */}
       <section className="py-32 px-8 md:px-24">
         <div className="text-center mb-20 px-4">
           <h2 className={`${leagueSpartan.className} text-4xl font-bold tracking-[0.4em] mb-6 uppercase text-[#1a2332]/40`}>SELECTIONS WORLDWIDE</h2>
@@ -94,10 +78,10 @@ export default function DIPPage() {
             </div>
           </div>
           {data.uniLogos && (
-            <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24">
+            <div className="flex flex-wrap justify-center items-center gap-8 md:gap-14">
               {data.uniLogos.map((logo, i) => (
-                <div key={i} className="h-16 md:h-24 w-auto flex items-center justify-center transition-transform hover:scale-110">
-                  <img src={urlFor(logo)} className="max-h-full max-w-[240px] object-contain" alt="Uni Logo" />
+                <div key={i} className="h-12 md:h-16 w-auto flex items-center justify-center transition-transform hover:scale-110">
+                  <img src={urlFor(logo)} className="max-h-full max-w-[160px] md:max-w-[180px] object-contain" alt="Uni Logo" />
                 </div>
               ))}
             </div>
@@ -105,7 +89,7 @@ export default function DIPPage() {
         </div>
       </section>
 
-      {/* 3. PROGRAM OVERVIEW - 米白底、大標題、三欄表格 */}
+      {/* 3. PROGRAM OVERVIEW */}
       <section className="py-32 px-8 md:px-24">
         <div className="max-w-7xl mx-auto">
           <h2 className={`${libreCaslon.className} text-6xl md:text-8xl font-bold text-center tracking-widest mb-24 uppercase`}>PROGRAM OVERVIEW</h2>
@@ -126,45 +110,41 @@ export default function DIPPage() {
         </div>
       </section>
 
-      {/* 4. EDUCATION PLANNING - 🚨 修正：移除 Timeline (進度條)，保留標題與表格 */}
+      {/* 4. EDUCATION PLANNING - 刪除小方塊與左側 TOPICS 欄位，右側字體放大加深 */}
       <section className="py-32 px-8 md:px-24">
         <h2 className={`${libreCaslon.className} text-6xl md:text-8xl font-bold text-center tracking-widest mb-20 uppercase`}>EDUCATION PLANNING</h2>
         <div className="max-w-7xl mx-auto">
-          <div className="flex justify-center gap-12 mb-20 text-sm tracking-[0.3em] uppercase font-bold text-[#1a2332]/60">
-            <div className="flex items-center gap-4"><span className="w-6 h-6 bg-gray-600 inline-block"></span> Individual Project</div>
-            <div className="flex items-center gap-4"><span className="w-6 h-6 bg-red-700 inline-block"></span> Group Project</div>
-          </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-lg border-collapse border-2 border-[#1a2332] min-w-[950px]">
+            <table className="w-full text-lg border-collapse border-2 border-[#1a2332] min-w-[700px]">
               <tbody className="text-center font-bold tracking-wider">
                 <tr>
-                  <td rowSpan="6" className="border-2 border-[#1a2332] p-8 w-40 tracking-[0.5em] uppercase text-xs">TOPICS</td>
                   <td className="border-2 border-[#1a2332] p-6 text-left pl-10">MODELING FUNDAMENTALS</td>
-                  <td rowSpan="6" className="border-2 border-[#1a2332] p-8 text-[#1a2332]/30 uppercase text-xs">BUILD A 3-STATEMENT MODEL</td>
+                  <td rowSpan="6" className="border-2 border-[#1a2332] p-8 text-[#1a2332]/80 uppercase text-base md:text-lg tracking-widest">BUILD A 3-STATEMENT MODEL</td>
                 </tr>
                 {["3-STATEMENT PROJECTION", "ADVANCED ACCOUNTING", "ENTERPRISE & EQUITY VALUE", "WACC & DCF", "TRADING COMPARABLES"].map(t => (
                   <tr key={t}><td className="border-2 border-[#1a2332] p-6 text-left pl-10">{t}</td></tr>
                 ))}
                 <tr>
-                  <td rowSpan="2" className="border-2 border-[#1a2332]"></td>
                   <td className="border-2 border-[#1a2332] p-6 text-left pl-10">LBO / DCF BASICS & MODELING</td>
-                  <td rowSpan="2" className="border-2 border-[#1a2332] p-8 text-[#1a2332]/30 uppercase text-xs">BUILD A DCF / LBO MODEL</td>
+                  <td rowSpan="2" className="border-2 border-[#1a2332] p-8 text-[#1a2332]/80 uppercase text-base md:text-lg tracking-widest">BUILD A DCF / LBO MODEL</td>
                 </tr>
                 <tr><td className="border-2 border-[#1a2332] p-6 text-left pl-10">PROJECT FINANCE MODELING</td></tr>
                 <tr>
-                  <td rowSpan="3" className="border-2 border-[#1a2332]"></td>
                   <td className="border-2 border-[#1a2332] p-6 text-left pl-10">ACCRETION/DILUTION ANALYSIS</td>
-                  <td rowSpan="2" className="border-2 border-[#1a2332] p-8 text-red-700 uppercase text-xs font-black">GROUP PROJECT: M&A PITCH BOOK</td>
+                  <td rowSpan="2" className="border-2 border-[#1a2332] p-8 text-red-700 uppercase text-base md:text-lg tracking-widest font-black">GROUP PROJECT: M&A PITCH BOOK</td>
                 </tr>
                 <tr><td className="border-2 border-[#1a2332] p-6 text-left pl-10">M&A MODELING</td></tr>
-                <tr><td className="border-2 border-[#1a2332] p-6 text-left pl-10">ESG MODELING</td><td className="border-2 border-[#1a2332] p-8 text-red-700 uppercase text-xs font-black">GROUP PROJECT: ESG PITCH BOOK</td></tr>
+                <tr>
+                  <td className="border-2 border-[#1a2332] p-6 text-left pl-10">ESG MODELING</td>
+                  <td className="border-2 border-[#1a2332] p-8 text-red-700 uppercase text-base md:text-lg tracking-widest font-black">GROUP PROJECT: ESG PITCH BOOK</td>
+                </tr>
               </tbody>
             </table>
           </div>
         </div>
       </section>
 
-      {/* 5. MENTOR INTRO - 產業表格 > 內文 > LOGO 牆 */}
+      {/* 5. MENTOR INTRO */}
       <section className="py-32 px-8 md:px-24 bg-[#f3f2ec]">
         <div className="max-w-7xl mx-auto text-center">
           <h2 className={`${libreCaslon.className} text-6xl md:text-8xl font-bold tracking-widest mb-20 uppercase`}>MENTOR INTRO</h2>
@@ -189,18 +169,21 @@ export default function DIPPage() {
         </div>
       </section>
 
-      {/* 6. GUEST SPEAKER INTRO - 跑馬燈 + TOPICS */}
+      {/* 6. GUEST SPEAKER INTRO - 移除跑馬燈，改為等高的 Grid 排列滿版 */}
       <section className="py-32 px-8 md:px-24">
         <div className="max-w-7xl mx-auto">
           <h2 className={`${libreCaslon.className} text-6xl md:text-8xl font-bold tracking-widest text-center mb-24 uppercase`}>GUEST SPEAKER INTRO</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-start">
-            <div className="w-full overflow-hidden">
+            <div className="w-full h-full flex flex-col">
                <h3 className={`${leagueSpartan.className} text-xs tracking-[0.5em] text-[#1a2332]/30 mb-12 text-center uppercase font-black`}>SPEAKERS BACKGROUND: UK • TAIWAN • HK • USA</h3>
                {data.speakerLogos && (
-                 <>
-                  <Marquee images={data.speakerLogos} speed={35} />
-                  <div className="mt-16"><Marquee images={data.speakerLogos.slice().reverse()} speed={40} /></div>
-                 </>
+                 <div className="grid grid-cols-2 md:grid-cols-3 gap-12 items-center justify-items-center flex-grow py-8">
+                   {data.speakerLogos.map((logo, i) => (
+                     <div key={i} className="transition-transform hover:scale-105">
+                       <img src={urlFor(logo)} className="h-16 md:h-20 lg:h-24 w-auto object-contain" alt="Speaker Logo" />
+                     </div>
+                   ))}
+                 </div>
                )}
             </div>
             <div className="px-8">
@@ -215,9 +198,6 @@ export default function DIPPage() {
         </div>
       </section>
 
-      <footer className="py-16 text-center border-t border-[#1a2332]/10">
-        <p className={`${leagueSpartan.className} text-xs text-[#1a2332]/40 tracking-[0.8em]`}>© 2026 JAMS INVESTMENT. ALL RIGHTS RESERVED.</p>
-      </footer>
     </div>
   );
 }
