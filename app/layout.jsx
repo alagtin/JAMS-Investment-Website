@@ -28,20 +28,20 @@ export default function RootLayout({ children }) {
             <span className="w-6 h-0.5 bg-white shadow-sm transition-all peer-checked:-rotate-45 peer-checked:-translate-y-2"></span>
           </label>
 
-          <div className={`${leagueSpartan.className} fixed md:relative top-0 left-0 w-full h-screen md:h-auto bg-black md:bg-transparent flex flex-col md:flex-row items-center justify-center md:justify-end gap-10 md:gap-12 text-white md:text-white/80 text-2xl md:text-[12px] font-normal tracking-[0.4em] uppercase transition-all duration-500 transform -translate-y-full md:translate-y-0 peer-checked:translate-y-0 z-[105]`}>
+          <div className={`${leagueSpartan.className} fixed md:relative top-0 left-0 w-full h-screen md:h-auto bg-black md:bg-transparent flex flex-col md:flex-row items-center justify-center md:justify-end gap-10 md:gap-12 text-white text-2xl md:text-[12px] font-bold tracking-[0.4em] uppercase transition-transform duration-500 transform -translate-y-full md:translate-y-0 peer-checked:translate-y-0 z-[105]`}>
             <Link href="/about" className="hover:text-[#820000] transition-colors duration-300">ABOUT</Link>
             <Link href="/teams" className="hover:text-[#820000] transition-colors duration-300">TEAMS</Link>
             <Link href="/dip" className="hover:text-[#820000] transition-colors duration-300 border border-white/20 md:border-none px-10 py-4 md:p-0">DIP</Link>
           </div>
         </nav>
 
-        {/* 內容區：把 Footer 壓在最底下的關鍵 */}
+        {/* 內容區：確保 Footer 永遠在最底 */}
         <main className="flex-grow w-full">
           {children}
         </main>
 
-        {/* Footer：防變形、完美銜接首頁 */}
-        <footer className="w-full shrink-0 bg-black py-20 px-8 md:px-16 border-t border-white/10 relative z-[90] snap-end">
+        {/* 🚨 修正：移除 snap-end，解決一進頁面就跳到底部的 Bug */}
+        <footer className="w-full shrink-0 bg-black py-20 px-8 md:px-16 border-t border-white/10 relative z-[90]">
           <div className="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-start lg:items-center gap-12 lg:gap-0">
             <div className={`${libreCaslon.className} text-white text-2xl md:text-3xl font-bold uppercase tracking-[0.1em] whitespace-nowrap`}>
               JAMS Investment
@@ -59,6 +59,9 @@ export default function RootLayout({ children }) {
         </footer>
 
         <style dangerouslySetInnerHTML={{ __html: `
+          #menu-toggle:checked ~ label span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+          #menu-toggle:checked ~ label span:nth-child(2) { opacity: 0; }
+          #menu-toggle:checked ~ label span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
           #menu-toggle:checked ~ div { transform: translateY(0); }
         `}} />
       </body>

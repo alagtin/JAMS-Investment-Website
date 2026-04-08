@@ -18,11 +18,12 @@ function urlFor(source) { return source ? builder.image(source).url() : null; }
 export default function HomePage() {
   const [data, setData] = useState(null);
 
-  // 🚨 首頁專屬特效：只有進入首頁時，才給 HTML 加上強制吸附屬性
   useEffect(() => {
+    // 🚨 修正：進場先強制滾回最頂端，並開啟吸附
+    window.scrollTo(0, 0);
     document.documentElement.classList.add('snap-y', 'snap-mandatory');
+    
     return () => {
-      // 🚨 離開首頁時立刻拔掉，絕不影響 TEAMS 或其他分頁
       document.documentElement.classList.remove('snap-y', 'snap-mandatory');
     };
   }, []);
@@ -47,12 +48,10 @@ export default function HomePage() {
   ];
 
   return (
-    /* 🚨 移除了導致捲軸打架的 overflow-y-scroll，把滾動權還給全域視窗 */
     <div className="w-full bg-black flex flex-col">
       {sections.map((sec) => (
         <section 
           key={sec.id} 
-          /* 🚨 h-[100dvh] 解決手機縮放偏移，snap-start 完美吸附 */
           className="relative h-[100dvh] w-full snap-start snap-always flex items-center justify-center overflow-hidden group"
         >
           <Link href={sec.link} className="absolute inset-0 z-30 cursor-pointer" />
