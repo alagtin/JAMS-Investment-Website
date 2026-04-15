@@ -31,7 +31,8 @@ export default function RootLayout({ children }) {
           <div className={`${leagueSpartan.className} fixed md:relative top-0 left-0 w-full h-screen md:h-auto bg-black md:bg-transparent flex flex-col md:flex-row items-center justify-center md:justify-end gap-10 md:gap-12 text-white text-2xl md:text-[12px] font-bold tracking-[0.4em] uppercase transition-transform duration-500 transform -translate-y-full md:translate-y-0 peer-checked:translate-y-0 z-[105]`}>
             <Link href="/about" className="hover:text-[#820000] transition-colors duration-300">ABOUT</Link>
             <Link href="/teams" className="hover:text-[#820000] transition-colors duration-300">TEAMS</Link>
-            <Link href="/dip" className="hover:text-[#820000] transition-colors duration-300 border border-white/20 md:border-none px-10 py-4 md:p-0">DIP</Link>
+            <Link href="/dip" className="hover:text-[#820000] transition-colors duration-300">DIP</Link>
+            <Link href="/join" className="hover:text-[#820000] transition-colors duration-300 border border-white/20 md:border-none px-10 py-4 md:p-0">JOIN US</Link>
           </div>
         </nav>
 
@@ -40,7 +41,6 @@ export default function RootLayout({ children }) {
           {children}
         </main>
 
-        {/* 🚨 修正：徹底拔掉 snap-start！這東西在全域會害死首頁 */}
         <footer className="w-full shrink-0 bg-black py-20 px-8 md:px-16 border-t border-white/10 relative z-[90]">
           <div className="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-start lg:items-center gap-12 lg:gap-0">
             <div className={`${libreCaslon.className} text-white text-2xl md:text-3xl font-bold uppercase tracking-[0.1em] whitespace-nowrap`}>
