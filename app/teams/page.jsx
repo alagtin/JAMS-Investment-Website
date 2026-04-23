@@ -49,7 +49,7 @@ export default function TeamsPage() {
   return (
     <div className="relative min-h-screen bg-black text-white">
       
-      {/* 1. HERO SECTION - 🚨 這次絕對 100% 照圖施工：置中對齊 */}
+      {/* 1. HERO SECTION */}
       <section className="relative h-screen w-full flex flex-col items-center justify-center overflow-hidden bg-black px-8 md:px-24">
         {heroData?.backgroundType === 'video' && heroData.videoUrl ? (
           <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-85">
@@ -62,25 +62,25 @@ export default function TeamsPage() {
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black" />
         
-        {/* 🚨 標題區塊：絕對置中 (items-center, justify-center, text-center) */}
+        {/* 🚨 標題區塊：比例大幅修正，不再過度放大 */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }} 
           animate={{ opacity: 1, y: 0 }} 
           transition={{ duration: 1 }} 
           className="relative z-10 text-white flex flex-col items-center justify-center text-center"
         >
-          {/* MEET OUR：使用 Caslon 襯線體 */}
-          <h2 className={`${libreCaslon.className} text-2xl md:text-4xl lg:text-5xl tracking-widest mb-1 md:mb-2`}>
+          {/* MEET OUR：比例稍微縮小，與下方 TEAMS 達成平衡 */}
+          <h2 className={`${libreCaslon.className} text-xl md:text-3xl lg:text-4xl tracking-[0.2em] mb-1 md:mb-2`}>
             MEET OUR
           </h2>
-          {/* TEAMS：使用 Spartan 無襯線粗體 */}
-          <h1 className={`${leagueSpartan.className} text-7xl md:text-[9rem] lg:text-[11rem] font-black uppercase tracking-wide leading-none drop-shadow-xl`}>
+          {/* TEAMS：從荒謬的 11rem 縮小到合理的 7rem 左右，保持氣場但不突兀 */}
+          <h1 className={`${leagueSpartan.className} text-6xl md:text-8xl lg:text-[7rem] font-black uppercase tracking-wide leading-none drop-shadow-xl`}>
             TEAMS
           </h1>
         </motion.div>
       </section>
 
-      {/* 2. 成員展示區 - 🚨 完全保留你給的 Code，一行都沒碰 */}
+      {/* 2. 成員展示區 */}
       <section className="relative z-10 px-8 md:px-24 py-32 selection:bg-blue-900 selection:text-white">
         <div className="flex flex-wrap justify-center gap-x-12 gap-y-24 max-w-[1400px] mx-auto">
           {teamMembers.map((member) => (
@@ -116,7 +116,8 @@ export default function TeamsPage() {
                 )}
               </div>
               
-              <h3 className={`${libreCaslon.className} text-2xl md:text-3xl tracking-wide mb-2 text-center uppercase`}>
+              {/* 🚨 名字：從 text-2xl/3xl 縮小到優雅的 text-lg md:text-xl */}
+              <h3 className={`${libreCaslon.className} text-lg md:text-xl tracking-wide mb-2 text-center uppercase`}>
                 {member.name}
               </h3>
               <p className={`${leagueSpartan.className} text-[11px] font-bold tracking-[0.3em] text-white/70 uppercase text-center mb-1`}>
