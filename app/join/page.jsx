@@ -2,130 +2,121 @@
 import { motion } from 'framer-motion';
 import { Libre_Caslon_Text, League_Spartan } from 'next/font/google';
 
-const libreCaslon = Libre_Caslon_Text({ subsets: ['latin'], weight: ['400', '700'] });
-const leagueSpartan = League_Spartan({ subsets: ['latin'], weight: ['400', '600', '700'] });
+const libreCaslon = Libre_Caslon_Text({ subsets: ['latin'], weight: ['700'] });
+const leagueSpartan = League_Spartan({ subsets: ['latin'], weight: ['400', '700', '900'] });
 
 export default function JoinUsPage() {
   return (
-    <div className="bg-[#faf9f5] text-[#1a2332] selection:bg-black selection:text-white min-h-screen">
+    <div className="bg-black text-white min-h-screen selection:bg-[#820000] selection:text-white">
       
-      {/* 1. HERO SECTION - 頁面主視覺 */}
-      <section className="pt-48 pb-24 px-8 md:px-24 flex flex-col items-center justify-center text-center">
-        <motion.h1 
-          initial={{ opacity: 0, y: 20 }}
+      {/* 1. 頂部大標 & 招募表單 (合而為一，直球對決) */}
+      <section className="pt-32 md:pt-48 pb-24 px-8 md:px-24 max-w-[1400px] mx-auto flex flex-col lg:flex-row gap-16 lg:gap-32">
+        
+        {/* 左側：極簡大標 */}
+        <div className="w-full lg:w-5/12 flex flex-col">
+          <motion.h1 
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1 }}
+            className={`${libreCaslon.className} text-6xl md:text-8xl lg:text-[7rem] font-black uppercase tracking-tight leading-none mb-6`}
+          >
+            JOIN<br/>JAMS.
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 0.3 }}
+            className={`${leagueSpartan.className} text-xs md:text-sm tracking-[0.4em] uppercase text-white/50 leading-relaxed`}
+          >
+            Passionate about finance, tech, or community?<br/>
+            Leave your details. We will find you.
+          </motion.p>
+        </div>
+
+        {/* 右側：精品級表單 */}
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className={`${libreCaslon.className} text-6xl md:text-8xl font-bold tracking-widest uppercase mb-8`}
+          transition={{ duration: 1, delay: 0.2 }}
+          className="w-full lg:w-7/12"
         >
-          JOIN THE VISION
-        </motion.h1>
-        <motion.p 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.3 }}
-          className={`${leagueSpartan.className} text-sm md:text-base tracking-[0.4em] uppercase font-bold text-[#1a2332]/50 max-w-3xl leading-relaxed`}
-        >
-          Whether you are looking to build your career with us or back the next generation of financial leaders.
-        </motion.p>
-      </section>
-
-      {/* 2. TALENT & CAREER SECTION - 給想加入團隊的人 */}
-      <section className="py-24 px-8 md:px-24 max-w-7xl mx-auto">
-        <div className="border-t-2 border-[#1a2332] pt-20 flex flex-col lg:flex-row gap-16 lg:gap-24">
-          
-          {/* 左側：招募文案 */}
-          <div className="w-full lg:w-1/3">
-            <h2 className={`${leagueSpartan.className} text-2xl md:text-3xl font-bold tracking-[0.3em] uppercase mb-8`}>
-              TALENT &<br/>CAREERS
-            </h2>
-            <p className={`${libreCaslon.className} text-lg text-[#1a2332]/80 leading-relaxed mb-8 text-justify`}>
-              We are constantly looking for driven individuals to expand our ecosystem. If you are passionate about finance, tech, or community building, leave your details below. Our team will reach out when a fitting opportunity arises.
-            </p>
-          </div>
-
-          {/* 右側：極簡表單 */}
-          <div className="w-full lg:w-2/3">
-            <form className="flex flex-col gap-10" onSubmit={(e) => e.preventDefault()}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <div className="flex flex-col">
-                  <label className={`${leagueSpartan.className} text-xs tracking-[0.2em] font-bold text-[#1a2332]/60 mb-2 uppercase`}>Full Name *</label>
-                  <input type="text" className="border-b-2 border-[#1a2332]/20 bg-transparent py-3 focus:outline-none focus:border-[#1a2332] transition-colors text-lg" required />
-                </div>
-                <div className="flex flex-col">
-                  <label className={`${leagueSpartan.className} text-xs tracking-[0.2em] font-bold text-[#1a2332]/60 mb-2 uppercase`}>Email Address *</label>
-                  <input type="email" className="border-b-2 border-[#1a2332]/20 bg-transparent py-3 focus:outline-none focus:border-[#1a2332] transition-colors text-lg" required />
-                </div>
+          {/* 🚨 如果你註冊了 Formspree，把這裡改成 <form action="你的URL" method="POST"> */}
+          <form className="flex flex-col gap-12" onSubmit={(e) => e.preventDefault()}>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              {/* 姓名 */}
+              <div className="flex flex-col relative group">
+                <input type="text" name="name" id="name" required className="peer w-full bg-transparent border-b border-white/20 py-3 text-white text-lg focus:outline-none focus:border-[#820000] transition-colors" placeholder=" " />
+                <label htmlFor="name" className={`${leagueSpartan.className} absolute left-0 top-3 text-white/40 text-xs tracking-[0.3em] uppercase transition-all peer-focus:-top-4 peer-focus:text-[#820000] peer-focus:text-[10px] peer-valid:-top-4 peer-valid:text-[10px]`}>
+                  Full Name *
+                </label>
               </div>
 
-              <div className="flex flex-col">
-                <label className={`${leagueSpartan.className} text-xs tracking-[0.2em] font-bold text-[#1a2332]/60 mb-2 uppercase`}>LinkedIn Profile URL *</label>
-                <input type="url" className="border-b-2 border-[#1a2332]/20 bg-transparent py-3 focus:outline-none focus:border-[#1a2332] transition-colors text-lg" required />
-              </div>
-
-              <div className="flex flex-col">
-                <label className={`${leagueSpartan.className} text-xs tracking-[0.2em] font-bold text-[#1a2332]/60 mb-4 uppercase`}>Role of Interest</label>
-                <div className="flex flex-wrap gap-4">
-                  {["Analyst", "Marketing & PR", "Tech / Design", "Open Application"].map((role) => (
-                    <label key={role} className="cursor-pointer">
-                      <input type="radio" name="role" value={role} className="peer sr-only" />
-                      <div className="px-6 py-3 border-2 border-[#1a2332]/20 text-sm font-bold tracking-wider uppercase peer-checked:bg-[#1a2332] peer-checked:text-[#faf9f5] transition-all hover:border-[#1a2332]">
-                        {role}
-                      </div>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex flex-col">
-                <label className={`${leagueSpartan.className} text-xs tracking-[0.2em] font-bold text-[#1a2332]/60 mb-2 uppercase`}>Tell us why you'd be a great fit (Optional)</label>
-                <textarea rows="3" className="border-b-2 border-[#1a2332]/20 bg-transparent py-3 focus:outline-none focus:border-[#1a2332] transition-colors text-lg resize-none"></textarea>
-              </div>
-
-              <button type="submit" className={`${leagueSpartan.className} mt-4 self-start bg-[#1a2332] text-[#faf9f5] px-12 py-5 text-sm tracking-[0.3em] uppercase font-bold hover:bg-black transition-colors`}>
-                Submit Application
-              </button>
-            </form>
-          </div>
-        </div>
-      </section>
-
-      {/* 3. PARTNERSHIP & SPONSOR SECTION - 給企業與贊助商 */}
-      <section className="bg-[#1a2332] text-[#faf9f5] py-32 px-8 md:px-24 mt-16">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-16">
-          
-          <div className="w-full md:w-1/2">
-            <h3 className={`${leagueSpartan.className} text-xs tracking-[0.5em] text-[#faf9f5]/50 mb-6 uppercase font-black`}>Corporate Partnerships</h3>
-            <h2 className={`${libreCaslon.className} text-5xl md:text-7xl font-bold tracking-wide mb-10 leading-tight`}>
-              BECOME OUR<br/>FIRST PARTNER.
-            </h2>
-            <div className="space-y-6 text-[#faf9f5]/80 text-lg md:text-xl font-light">
-              <p className="flex items-start gap-4">
-                <span className="font-bold text-[#faf9f5] mt-1">—</span>
-                Directly engage with top-tier campus talent and emerging financial professionals.
-              </p>
-              <p className="flex items-start gap-4">
-                <span className="font-bold text-[#faf9f5] mt-1">—</span>
-                Enhance your employer brand through our exclusive workshops, pitch events, and DIP program.
-              </p>
-            </div>
-          </div>
-
-          <div className="w-full md:w-1/2 flex justify-center md:justify-end">
-            <div className="border-2 border-[#faf9f5] p-10 md:p-16 max-w-md w-full text-center hover:bg-[#faf9f5] hover:text-[#1a2332] transition-all duration-500 group cursor-pointer" 
-                 onClick={() => window.location.href = 'mailto:contact@jamsinvestment.com?subject=Partnership Inquiry'}>
-              <div className={`${leagueSpartan.className} text-3xl font-bold tracking-widest uppercase mb-4`}>
-                SPONSOR<br/>OUR VISION
-              </div>
-              <p className="text-sm opacity-70 group-hover:opacity-100 tracking-wider mb-8">
-                Let's discuss how we can build value together.
-              </p>
-              <div className={`${leagueSpartan.className} inline-block border-b-2 border-transparent group-hover:border-[#1a2332] text-sm tracking-[0.2em] font-bold pb-1`}>
-                GET IN TOUCH &rarr;
+              {/* 信箱 */}
+              <div className="flex flex-col relative group">
+                <input type="email" name="email" id="email" required className="peer w-full bg-transparent border-b border-white/20 py-3 text-white text-lg focus:outline-none focus:border-[#820000] transition-colors" placeholder=" " />
+                <label htmlFor="email" className={`${leagueSpartan.className} absolute left-0 top-3 text-white/40 text-xs tracking-[0.3em] uppercase transition-all peer-focus:-top-4 peer-focus:text-[#820000] peer-focus:text-[10px] peer-valid:-top-4 peer-valid:text-[10px]`}>
+                  Email Address *
+                </label>
               </div>
             </div>
-          </div>
 
-        </div>
+            {/* LinkedIn */}
+            <div className="flex flex-col relative group">
+              <input type="url" name="linkedin" id="linkedin" required className="peer w-full bg-transparent border-b border-white/20 py-3 text-white text-lg focus:outline-none focus:border-[#820000] transition-colors" placeholder=" " />
+              <label htmlFor="linkedin" className={`${leagueSpartan.className} absolute left-0 top-3 text-white/40 text-xs tracking-[0.3em] uppercase transition-all peer-focus:-top-4 peer-focus:text-[#820000] peer-focus:text-[10px] peer-valid:-top-4 peer-valid:text-[10px]`}>
+                LinkedIn Profile URL *
+              </label>
+            </div>
+
+            {/* 職位選擇 */}
+            <div className="flex flex-col gap-6">
+              <label className={`${leagueSpartan.className} text-[10px] tracking-[0.3em] text-white/40 uppercase`}>Role of Interest</label>
+              <div className="flex flex-wrap gap-4">
+                {["Analyst", "Marketing & PR", "Tech / Design", "Open App"].map((role) => (
+                  <label key={role} className="cursor-pointer">
+                    <input type="radio" name="role" value={role} className="peer sr-only" required />
+                    <div className={`${leagueSpartan.className} px-6 py-3 border border-white/20 text-xs tracking-[0.2em] uppercase text-white/60 peer-checked:bg-[#820000] peer-checked:text-white peer-checked:border-[#820000] hover:border-white transition-all duration-300`}>
+                      {role}
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* 送出按鈕 */}
+            <button type="submit" className={`${leagueSpartan.className} mt-8 w-full md:w-auto self-start bg-white text-black px-12 py-5 text-xs tracking-[0.4em] font-bold uppercase hover:bg-[#820000] hover:text-white transition-colors duration-500`}>
+              Submit Application
+            </button>
+          </form>
+        </motion.div>
+      </section>
+
+      {/* 2. 贊助區塊 (重製：滿版大氣 Banner) */}
+      <section className="px-8 md:px-24 pb-32 max-w-[1400px] mx-auto mt-12">
+        <a 
+          href="mailto:jamsinvestment@gmail.com?subject=Partnership Inquiry" 
+          className="block w-full border border-white/10 p-12 md:p-20 relative group overflow-hidden cursor-pointer bg-zinc-950 hover:border-white/30 transition-colors duration-500"
+        >
+          {/* 背景 Hover 擴散效果 */}
+          <div className="absolute inset-0 bg-[#820000] translate-y-[100%] group-hover:translate-y-0 transition-transform duration-700 ease-in-out z-0" />
+          
+          <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-12">
+            <div>
+              <h3 className={`${leagueSpartan.className} text-[10px] tracking-[0.5em] text-white/40 group-hover:text-white/70 mb-6 uppercase transition-colors`}>
+                Corporate Partnerships
+              </h3>
+              <h2 className={`${libreCaslon.className} text-4xl md:text-6xl font-bold uppercase tracking-widest leading-none`}>
+                Sponsor<br/>Our Vision.
+              </h2>
+            </div>
+            
+            <div className={`${leagueSpartan.className} flex items-center gap-4 text-xs tracking-[0.4em] uppercase font-bold text-white/50 group-hover:text-white transition-colors`}>
+              Get In Touch 
+              <span className="text-xl font-light transform group-hover:translate-x-2 transition-transform">&rarr;</span>
+            </div>
+          </div>
+        </a>
       </section>
 
     </div>
