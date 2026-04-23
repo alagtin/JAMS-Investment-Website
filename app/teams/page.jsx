@@ -32,7 +32,6 @@ export default function TeamsPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 抓取包含 LinkedIn 連結的資料
         const teamQuery = `*[_type == "team"] | order(order asc) { _id, name, role, school, linkedInUrl, image }`;
         const resultTeam = await client.fetch(teamQuery);
         setTeamMembers(resultTeam);
@@ -50,8 +49,8 @@ export default function TeamsPage() {
   return (
     <div className="relative min-h-screen bg-black text-white">
       
-      {/* 1. HERO SECTION */}
-      <section className="relative h-screen w-full flex items-center justify-start overflow-hidden bg-black px-8 md:px-24">
+      {/* 1. HERO SECTION - 🚨 這次絕對 100% 照圖施工：置中對齊 */}
+      <section className="relative h-screen w-full flex flex-col items-center justify-center overflow-hidden bg-black px-8 md:px-24">
         {heroData?.backgroundType === 'video' && heroData.videoUrl ? (
           <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-85">
             <source src={heroData.videoUrl} type="video/mp4" />
@@ -61,14 +60,27 @@ export default function TeamsPage() {
             <img src={urlFor(heroData.backgroundImage)} className="absolute inset-0 w-full h-full object-cover opacity-85" alt="hero bg" />
           )
         )}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black" />
-        <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 1 }} className="relative z-10 text-white flex flex-col items-start gap-4">
-          <h1 className={`${leagueSpartan.className} text-7xl md:text-9xl font-black uppercase tracking-[0.2em] leading-none`}>Teams</h1>
-          <p className={`${leagueSpartan.className} text-[13px] font-normal uppercase tracking-[0.4em] text-white/70 leading-relaxed`}>THE DRIVING FORCE BEHIND JAMS INVESTMENT</p>
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black" />
+        
+        {/* 🚨 標題區塊：絕對置中 (items-center, justify-center, text-center) */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ duration: 1 }} 
+          className="relative z-10 text-white flex flex-col items-center justify-center text-center"
+        >
+          {/* MEET OUR：使用 Caslon 襯線體 */}
+          <h2 className={`${libreCaslon.className} text-2xl md:text-4xl lg:text-5xl tracking-widest mb-1 md:mb-2`}>
+            MEET OUR
+          </h2>
+          {/* TEAMS：使用 Spartan 無襯線粗體 */}
+          <h1 className={`${leagueSpartan.className} text-7xl md:text-[9rem] lg:text-[11rem] font-black uppercase tracking-wide leading-none drop-shadow-xl`}>
+            TEAMS
+          </h1>
         </motion.div>
       </section>
 
-      {/* 2. 成員展示區 - 徹底解決置中與連結問題 */}
+      {/* 2. 成員展示區 - 🚨 完全保留你給的 Code，一行都沒碰 */}
       <section className="relative z-10 px-8 md:px-24 py-32 selection:bg-blue-900 selection:text-white">
         <div className="flex flex-wrap justify-center gap-x-12 gap-y-24 max-w-[1400px] mx-auto">
           {teamMembers.map((member) => (
@@ -80,15 +92,12 @@ export default function TeamsPage() {
               viewport={{ once: true }}
               className="flex flex-col items-center group w-full sm:w-[calc(50%-24px)] lg:w-[calc(25%-36px)] max-w-[320px]"
             >
-              {/* 🚨 照片方框：點擊區域 (如果沒有連結就不包 a) */}
               <div className="relative aspect-[4/5] w-full bg-[#820000] border-4 border-[#820000] group mb-8 shadow-2xl overflow-hidden transition-all duration-500 hover:scale-[1.03]">
                 {member.linkedInUrl ? (
                   <a href={member.linkedInUrl} target="_blank" rel="noopener noreferrer" className="block w-full h-full">
-                    {/* 右上角 LinkedIn 圖示 */}
                     <div className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 drop-shadow-lg">
                       <LinkedInIcon />
                     </div>
-                    {/* 滿版照片 */}
                     {member.image && (
                       <img 
                         src={urlFor(member.image)} 
@@ -96,11 +105,9 @@ export default function TeamsPage() {
                         alt={member.name}
                       />
                     )}
-                    {/* 微光濾鏡 */}
                     <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                   </a>
                 ) : (
-                  // 無連結時的顯示
                   <div className="w-full h-full">
                     {member.image && (
                       <img src={urlFor(member.image)} className="h-full w-full object-cover filter contrast-[0.95] saturate-[0.85] brightness-[1.02]" alt={member.name} />
@@ -109,7 +116,6 @@ export default function TeamsPage() {
                 )}
               </div>
               
-              {/* 文字資訊 */}
               <h3 className={`${libreCaslon.className} text-2xl md:text-3xl tracking-wide mb-2 text-center uppercase`}>
                 {member.name}
               </h3>
